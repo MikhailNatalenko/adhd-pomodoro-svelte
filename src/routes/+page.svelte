@@ -1,23 +1,16 @@
 <script lang="ts">
 	import Pomodoro from './Pomodoro.svelte';
-	import type { TimerLog, TimerEvent } from './types.ts';
 	import Logpanel from './Logpanel.svelte';
+
+	import type { Timer, TimerEvent } from './types.ts';
 	import { dbgParams, prodParams } from './constants';
 
 	let debug: boolean = false;
 
-	let timerLogs: TimerLog[] = [];
-	let logCur = 0;
+	let timerLogs: Timer[] = [];
 
 	function onTimer(event: TimerEvent) {
-		console.log(`Start time: ${event.detail.start} - finish: ${event.detail.finish}`);
-		let logRecord: TimerLog = {
-			id: ++logCur,
-			name: event.detail.name,
-			start: event.detail.start,
-			finish: event.detail.finish
-		};
-		timerLogs = [...timerLogs, logRecord];
+		timerLogs = [...timerLogs, event.detail];
 	}
 </script>
 

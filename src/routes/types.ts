@@ -1,23 +1,26 @@
-export interface TimerLog {
-    id: number
-    name: string;
+export class Timer {
     start: Date;
     finish: Date;
+    name: string;
+    value: number;
+
+    constructor(value = 0, name = '') {
+        this.start = new Date();
+        this.finish = new Date();
+        this.name = name;
+        this.value = value;
+    }
 }
 
 
 export interface TimerEvent {
-    detail: {
-        timer: number;
-        start: Date;
-        finish: Date;
-        name: string;
-    };
+    detail: Timer;
 }
 
 export const TimerState = {
     RUNNING: 'RUNNING',
     STOPPED: 'STOPPED',
     WAITING_FOR_STOP: 'WAITING_FOR_STOP',
-    ADDING_TIME: 'ADDING_TIME'
 };
+
+

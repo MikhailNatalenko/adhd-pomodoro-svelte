@@ -2,9 +2,9 @@
 	import { createEventDispatcher } from 'svelte';
 	import { playAlertSound } from './audio/Ringer.svelte';
 	import Tooltip from './Tooltip.svelte';
+	import { formatTimeClock } from './utils';
 
 	export let time = 0;
-	export let visible = true;
 	$: runTimer(time);
 
 	const dispatch = createEventDispatcher();
@@ -37,17 +37,7 @@
 
 	function alarming() {
 		playAlertSound();
-		dispatch('alarming', { startTs: startTs, initTime: time, endTs: new Date() });
-	}
-
-	function formatTime(time: number) {
-		let minutes = Math.floor(time / 60)
-			.toString()
-			.padStart(2, '0');
-		let seconds = Math.floor(time % 60)
-			.toString()
-			.padStart(2, '0');
-		return `${minutes}:${seconds}`;
+		dispatch('alarming');
 	}
 
 	function stop() {
@@ -56,9 +46,7 @@
 </script>
 
 <Tooltip title="stop timer">
-	{#if visible}
-		<button id="watch" on:click={stop}>{formatTime(currentTimerValue)} </button>
-	{/if}
+	<button id="watch" on:click={stop}>{formatTimeClock(currentTimerValue)} </button>
 </Tooltip>
 
 <style>
