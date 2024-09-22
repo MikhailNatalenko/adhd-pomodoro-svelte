@@ -56,7 +56,7 @@
 			max="100"
 			on:mouseup={handleMouseUp}
 		/>
-		<button on:click={volumemax}><img src="../volume_up.svg" alt="Volume max icon" /></button>
+		<button on:click={volumemax}><img src="{base}/volume_up.svg" alt="Volume max icon" /></button>
 	</div>
 </label>
 
