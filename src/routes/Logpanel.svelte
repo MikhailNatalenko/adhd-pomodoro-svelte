@@ -85,9 +85,12 @@
 
 <button on:click={() => (timerLogs = [])} class="clear">Clear logs</button>
 <span>Active time: </span><span> {formatTimeHHMMSS(totalWorkTime(timerLogs))}</span><br />
-{#each timerLogs as log}
-	<Logline {...log} />
-{/each}
+
+<div class="logs">
+	{#each timerLogs as log}
+		<Logline {...log} />
+	{/each}
+</div>
 
 <style>
 	@import './../styles/button.css';
@@ -100,5 +103,15 @@
 		font-family: 'title_roboto', sans-serif;
 		font-size: 20px;
 		color: #482a2a;
+	}
+
+	.logs {
+		max-height: calc(1.2em * 23); /* Height for 20 lines */
+		min-height: calc(1.2em * 23); /* Height for 20 lines */
+		overflow-y: auto; /* Enable vertical scrolling if content exceeds max height */
+		background-color: #fbfffd; /* Background color */
+		border: 1px solid #f9f9f9; /* Border */
+		padding: 10px; /* Padding */
+		border-radius: 8px;
 	}
 </style>

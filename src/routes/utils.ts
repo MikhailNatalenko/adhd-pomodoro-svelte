@@ -19,8 +19,6 @@ export function formatTimeLogline(time: number) {
     } else {
         return `${seconds} sec`;
     }
-
-
 }
 
 /// seconds -> H hours
@@ -32,14 +30,12 @@ export function formatTimeHHMMSS(time: number) {
     let minutes = Math.floor(time / 60);
     let seconds = Math.floor(time % 60);
 
-    if (hours == 1) {
-        return `${hours} hour ${minutes} min`;
-    }
-    if (hours > 0) {
-        return `${hours} hours ${minutes} min`;
-    }
+    if (hours == 1) return `${hours} hour ${minutes} min`;
+    if (hours > 0) return `${hours} hours ${minutes} min`;
 
-    return `${minutes} min ${seconds} sec`;
+    if (minutes > 10) return `${minutes} min`;
+    if (minutes > 1) return `${minutes} min ${seconds} sec`;
+    return `${seconds} sec`;
 }
 
 
