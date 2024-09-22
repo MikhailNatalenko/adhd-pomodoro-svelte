@@ -2,7 +2,9 @@
 	import Logline from './Logline.svelte';
 	import Cookies from 'js-cookie';
 	import { onMount } from 'svelte';
-	import type { Timer, TimerEvent } from './types.ts';
+	import type { Timer } from './types.ts';
+	import { formatTimeHHMMSS } from './utils';
+
 	export let timerLogs: Timer[] = [];
 
 	type CachedLog = {
@@ -13,6 +15,15 @@
 
 	let mounted = false;
 
+	function totalWorkTime(timers: Timer[]) {
+		let duration = 0;
+		timers.forEach((element) => {
+			if (element.name == 'work') {
+				duration += (element.finish.getTime() - element.start.getTime()) / 1000;
+			}
+		});
+		return duration;
+	}
 	// Validate this value with a custom type guard (extend to your needs)
 	function validateCachedLogs(arr: any): arr is CachedLog[] {
 		arr.forEach((o: any) => {
@@ -73,7 +84,7 @@
 </script>
 
 <button on:click={() => (timerLogs = [])} class="clear">Clear logs</button>
-<span>Active time: </span><span>: </span><br />
+<span>Active time: </span><span> {formatTimeHHMMSS(totalWorkTime(timerLogs))}</span><br />
 {#each timerLogs as log}
 	<Logline {...log} />
 {/each}
