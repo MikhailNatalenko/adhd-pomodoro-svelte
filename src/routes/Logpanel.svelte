@@ -75,6 +75,15 @@
 	});
 </script>
 
+<button on:click={() => (timerLogs = [])} class="clear">Clear logs</button><br />
 {#each timerLogs as log}
 	<Logline {...log} />
 {/each}
+
+<style>
+	@import './../styles/button.css';
+	.clear {
+		margin: 10px;
+		background-color: rgb(88, 18, 39);
+	}
+</style>
