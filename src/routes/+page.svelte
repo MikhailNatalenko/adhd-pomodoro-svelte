@@ -4,7 +4,7 @@
 	import Logpanel from './Logpanel.svelte';
 	import { dbgParams, prodParams } from './constants';
 
-	let debug: boolean = true;
+	let debug: boolean = false;
 
 	let timerLogs: TimerLog[] = [];
 	let logCur = 0;
