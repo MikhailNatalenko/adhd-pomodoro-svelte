@@ -1,0 +1,32 @@
+@import './fonts.css';
+
+button {
+    border: none;
+    color: rgb(220, 220, 220);
+    /* padding: 17px 32px; */
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    margin: 5px 8px;
+    cursor: pointer;
+    font-family: 'Roboto-Regular';
+    height: 46px;
+    width: 106px;
+    border-radius:8px;
+    background-color: rgb(31, 30, 30);
+}
+
+button:disabled {
+    background-color: #cec8c8;
+    color:darkslategrey
+}
+
+button:disabled:hover {
+    background-color: #cec8c8;
+    color:darkslategrey
+}
+button:hover {
+    background-color: #554242;
+}
+
