@@ -15,11 +15,11 @@ const config = {
 			{
 				pages: 'adhd-pomodoro-svelte', // path to public directory
 				assets: 'adhd-pomodoro-svelte', // path to public directory
-				fallback: '200.html' // may differ from host to host
+				fallback: '404.html' // may differ from host to host
 			}
 		),
 		paths: {
-            base: process.env.NODE_ENV === 'production' ? '/adhd-pomodoro-svelte' : '',
+            base: process.argv.includes('dev') ? '' : process.env.BASE_PATH
         }
 	}
 };
