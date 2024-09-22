@@ -2,6 +2,7 @@
 	import { setVolume } from './Ringer.svelte';
 	import Cookies from 'js-cookie';
 	import { onMount } from 'svelte';
+	import { base } from '$app/paths';
 
 	let initialVolume: number;
 
@@ -45,7 +46,7 @@
 <label>
 	<div class="container">
 		<button on:click={mute} class="leftbutton"
-			><img src="../volume_mute.svg" alt="Mute icon" />
+			><img src="{base}/volume_mute.svg" alt="Mute icon" />
 		</button>
 		<input
 			class="slider bar"
