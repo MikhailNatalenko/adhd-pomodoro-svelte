@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatTimeLogline } from './utils';
+	import { formatTimeLogline } from '$lib/utils';
 
 	export let start: Date;
 	export let finish: Date;

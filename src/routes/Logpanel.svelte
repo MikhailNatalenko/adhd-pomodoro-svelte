@@ -2,8 +2,8 @@
 	import Logline from './Logline.svelte';
 	import Cookies from 'js-cookie';
 	import { onMount } from 'svelte';
-	import type { Timer } from './types.ts';
-	import { formatTimeHHMMSS } from './utils';
+	import type { Timer } from '$lib/types';
+	import { formatTimeHHMMSS } from '$lib/utils';
 
 	export let timerLogs: Timer[] = [];
 
@@ -68,7 +68,7 @@
 	function updateLogs(logs: Timer[]) {
 		if (timerLogs == undefined) return;
 		if (!mounted) return;
-		Cookies.set('logs', serializeLogs(logs));
+		Cookies.set('logs', serializeLogs(logs), { expires: 31 });
 	}
 
 	$: updateLogs(timerLogs);

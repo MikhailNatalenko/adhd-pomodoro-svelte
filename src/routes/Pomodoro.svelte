@@ -10,7 +10,7 @@
 	import { onMount } from 'svelte';
 	import { playAlertSound } from './audio/Ringer.svelte';
 	import { createEventDispatcher } from 'svelte';
-	import { TimerState, Timer } from './types';
+	import { TimerState, Timer } from '$lib/types';
 	import { changeFavicon } from './Favicon.svelte';
 
 	const dispatch = createEventDispatcher();

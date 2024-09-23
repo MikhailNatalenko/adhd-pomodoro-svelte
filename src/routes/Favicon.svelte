@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
-	import type { TimerStateType } from './types';
-	import { TimerState } from './types';
+	import type { TimerStateType } from '$lib/types';
+	import { TimerState } from '$lib/types';
 	import { base } from '$app/paths';
 	let timerState = TimerState.STOPPED;
 

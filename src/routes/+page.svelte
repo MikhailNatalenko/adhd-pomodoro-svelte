@@ -2,8 +2,8 @@
 	import Pomodoro from './Pomodoro.svelte';
 	import Logpanel from './Logpanel.svelte';
 
-	import type { Timer, TimerEvent } from './types.ts';
-	import { dbgParams, prodParams } from './constants';
+	import type { Timer, TimerEvent } from '$lib/types';
+	import { dbgParams, prodParams } from '$lib/constants';
 
 	let debug: boolean = false;
 

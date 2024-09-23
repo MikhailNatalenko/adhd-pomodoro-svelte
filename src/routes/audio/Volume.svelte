@@ -15,7 +15,7 @@
 		console.log('volume', volume);
 		setVolume(volume / 100, true);
 
-		Cookies.set('volume', volume.toString());
+		Cookies.set('volume', volume.toString(), { expires: 31 });
 	}
 
 	function handleMouseUp(event: any) {

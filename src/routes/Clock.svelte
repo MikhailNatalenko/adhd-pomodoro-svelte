@@ -2,7 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { playAlertSound } from './audio/Ringer.svelte';
 	import Tooltip from './Tooltip.svelte';
-	import { formatTimeClock } from './utils';
+	import { formatTimeClock } from '$lib/utils';
 
 	export let time = 0;
 	$: runTimer(time);
