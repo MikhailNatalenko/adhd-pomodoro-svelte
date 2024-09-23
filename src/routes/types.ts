@@ -21,6 +21,6 @@ export const TimerState = {
     RUNNING: 'RUNNING',
     STOPPED: 'STOPPED',
     WAITING_FOR_STOP: 'WAITING_FOR_STOP',
-};
+} as const;
 
-
+export type TimerStateType = typeof TimerState[keyof typeof TimerState];
