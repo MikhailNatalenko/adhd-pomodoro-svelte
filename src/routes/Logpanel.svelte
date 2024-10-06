@@ -74,7 +74,7 @@
 	function updateLogs(logs: Timer[]) {
 		if (logs == undefined) return;
 		if (!mounted) return;
-		Cookies.set('normalized logs', serializeLogs(logs), { expires: 31 });
+		Cookies.set('logs', serializeLogs(logs), { expires: 31 });
 	}
 
 	$: updateLogs(timerLogs);

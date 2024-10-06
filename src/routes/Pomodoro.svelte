@@ -79,6 +79,13 @@
 				}
 			}
 		});
+
+		setInterval(function(){
+			if (timerState == TimerState.RUNNING) {
+				currentTimer.finish = new Date();
+				dispatch('timer', currentTimer)
+			}
+		}, 5000)
 	});
 </script>
 

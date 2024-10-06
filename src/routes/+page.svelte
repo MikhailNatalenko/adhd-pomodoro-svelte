@@ -10,6 +10,15 @@
 	let timerLogs: Timer[] = [];
 
 	function onTimer(event: TimerEvent) {
+		if (timerLogs.length > 0)
+		{
+			//TODO: dirty hack. Propably I should fix it later
+			if (timerLogs[timerLogs.length-1].start == event.detail.start) {
+				timerLogs[timerLogs.length-1].finish = event.detail.finish
+				timerLogs = timerLogs
+				return;
+			}	
+		}
 		timerLogs = [...timerLogs, event.detail];
 	}
 </script>
