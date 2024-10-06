@@ -101,6 +101,23 @@
 		timerLogs = timerLogs;
 	}
 
+	function removeItemAll(arr : any, value: any) {
+
+	}
+
+	function deleteLine(start : Date)
+	{
+		var i = 0;
+		while (i < timerLogs.length) {
+			if (timerLogs[i].start === start) {
+				timerLogs.splice(i, 1);
+			} else {
+				++i;
+			}
+		}
+		timerLogs = timerLogs;
+	}
+
 	$: updateParam(collapsed, 'collapsed');
 	$: updateParam(fill_gaps, 'fill_gaps');
 	$: updateLogs(timerLogs);
@@ -127,13 +144,18 @@
 <input type="checkbox" id="fillRests" name="fill rests gaps" bind:checked={fill_gaps} /><label
 	for="fillRests">Fill gaps</label
 >
+{#if fill_gaps}
+<button on:click={() => (timerLogs = fillGaps(timerLogs, 'rest'))} class="save">Save gaps</button>
+{/if}
+
 <br />
 
 <div class="logs">
 	{#each normalized as log (log.start)}
 		<Logline {...log} /> 
 		{#if rawView}
-			<button class="typeChanger" hidden={rawView} on:click={() => (changeLineType(log.start))}>ch</button>
+			<button class="mini" hidden={rawView} on:click={() => (changeLineType(log.start))}>ch</button>
+			<button class="mini" hidden={rawView} on:click={() => (deleteLine(log.start))}>x</button>
 		{/if}
 		<br />
 	{/each}
@@ -151,7 +173,7 @@
 		font-size: 20px;
 		color: #482a2a;
 	}
-	.typeChanger {
+	.mini {
 		border: none;
 		color: rgb(220, 220, 220);
 		/* padding: 17px 32px; */
@@ -168,7 +190,7 @@
 		background-color: rgb(19, 88, 108);
 	}
 
-	.typeChanger:hover {
+	.mini:hover {
 		background-color: rgb(58, 140, 163);
 	}
 	label {
@@ -177,6 +199,7 @@
 		color: #775252;
 	}
 	.logs {
+		/*TODO: calc heght of this element with screen size and not the amount of lines */
 		max-height: calc(1.2em * 23); /* Height for 20 lines */
 		min-height: calc(1.2em * 23); /* Height for 20 lines */
 		overflow-y: auto; /* Enable vertical scrolling if content exceeds max height */
