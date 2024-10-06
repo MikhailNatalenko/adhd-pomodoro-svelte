@@ -11,7 +11,8 @@
 		return `${minutes}:${seconds}`;
 	}
 
-	let duration = (finish.getTime() - start.getTime()) / 1000;
+	$: duration = (finish.getTime() - start.getTime()) / 1000;
+
 	let startClock = formatTs(start);
 	let rest = name === 'rest';
 	$: console.log('logline', start, finish, name, duration, startClock, rest);

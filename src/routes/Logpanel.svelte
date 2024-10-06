@@ -3,9 +3,10 @@
 	import Cookies from 'js-cookie';
 	import { onMount } from 'svelte';
 	import type { Timer } from '$lib/types';
-	import { formatTimeHHMMSS } from '$lib/utils';
+	import { formatTimeHHMMSS, normalizeTimers } from '$lib/utils';
 
 	export let timerLogs: Timer[] = [];
+	var normalized: Timer[] = [];
 
 	type CachedLog = {
 		name: string;
@@ -46,6 +47,11 @@
 		return JSON.stringify(cached);
 	}
 
+	function testCrr(norm: Timer[]) {
+		normalized = normalizeTimers(norm);
+		console.log(normalized);
+	}
+
 	function deserializeLogs(str: string): Timer[] {
 		const parsed = JSON.parse(str);
 		let cached: Timer[] = [];
@@ -66,16 +72,17 @@
 		}
 	}
 	function updateLogs(logs: Timer[]) {
-		if (timerLogs == undefined) return;
+		if (logs == undefined) return;
 		if (!mounted) return;
-		Cookies.set('logs', serializeLogs(logs), { expires: 31 });
+		Cookies.set('normalized logs', serializeLogs(logs), { expires: 31 });
 	}
 
 	$: updateLogs(timerLogs);
+	$: testCrr(timerLogs);
 
 	onMount(() => {
 		let logs = Cookies.get('logs');
-		console.log('coockies for logs contain', logs);
+		console.log('cookies for logs contain', logs);
 		mounted = true;
 		if (logs == undefined) return;
 
@@ -87,7 +94,7 @@
 <span>Active time: </span><span> {formatTimeHHMMSS(totalWorkTime(timerLogs))}</span><br />
 
 <div class="logs">
-	{#each timerLogs as log}
+	{#each normalized as log (log.start)}
 		<Logline {...log} />
 	{/each}
 </div>
