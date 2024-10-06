@@ -90,10 +90,22 @@
 		Cookies.set(name, param ? 'true' : 'false', { expires: 31 });
 	}
 
+	function changeLineType(start : Date)
+	{
+		timerLogs.forEach(timer => {
+			if (timer.start === start)
+			{
+				timer.name = (timer.name === 'rest') ? 'work' : 'rest'; 
+			}
+		});
+		timerLogs = timerLogs;
+	}
+
 	$: updateParam(collapsed, 'collapsed');
 	$: updateParam(fill_gaps, 'fill_gaps');
 	$: updateLogs(timerLogs);
 	$: normalizeTimers(timerLogs, collapsed, fill_gaps);
+	$: rawView = !(collapsed || fill_gaps)
 
 	onMount(() => {
 		let logs = Cookies.get('logs');
@@ -119,7 +131,11 @@
 
 <div class="logs">
 	{#each normalized as log (log.start)}
-		<Logline {...log} />
+		<Logline {...log} /> 
+		{#if rawView}
+			<button class="typeChanger" hidden={rawView} on:click={() => (changeLineType(log.start))}>ch</button>
+		{/if}
+		<br />
 	{/each}
 </div>
 
@@ -135,7 +151,26 @@
 		font-size: 20px;
 		color: #482a2a;
 	}
+	.typeChanger {
+		border: none;
+		color: rgb(220, 220, 220);
+		/* padding: 17px 32px; */
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 12px;
+		margin: 0px;
+		cursor: pointer;
+		font-family: 'Roboto-Regular';
+		height: 15px;
+		width: 50px;
+		border-radius: 5px;
+		background-color: rgb(19, 88, 108);
+	}
 
+	.typeChanger:hover {
+		background-color: rgb(58, 140, 163);
+	}
 	label {
 		font-family: 'title_roboto', sans-serif;
 		font-size: 14px;

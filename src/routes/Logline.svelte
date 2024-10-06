@@ -14,7 +14,10 @@
 	$: duration = (finish.getTime() - start.getTime()) / 1000;
 
 	let startClock = formatTs(start);
-	let rest = name === 'rest';
+	$: rest = name === 'rest';
+
+
+
 	$: console.log('logline', start, finish, name, duration, startClock, rest);
 </script>
 
@@ -28,7 +31,7 @@
 		{/if}
 	</snap>
 	<snap class="duration">{formatTimeLogline(duration)}</snap>
-</snap><br />
+</snap>
 
 <style>
 	@import './../styles/fonts.css';
