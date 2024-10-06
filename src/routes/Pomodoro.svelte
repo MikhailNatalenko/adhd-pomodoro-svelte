@@ -29,10 +29,6 @@
 	// time for visual clock
 	let pomodoroClock = 0;
 
-	function resetPomodoroClock() {
-		pomodoroClock = 0;
-	}
-
 	function setPomodoroClock(num) {
 		pomodoroClock = num * timersMultiplier;
 	}
@@ -55,7 +51,7 @@
 	function stopTimer(emit: boolean = true) {
 		timerState = TimerState.STOPPED;
 		currentTimer.finish = new Date();
-		resetPomodoroClock();
+		pomodoroClock = 0; // reset the clock
 
 		if (emit) dispatch('timer', currentTimer);
 	}
@@ -80,12 +76,12 @@
 			}
 		});
 
-		setInterval(function(){
+		setInterval(function () {
 			if (timerState == TimerState.RUNNING) {
 				currentTimer.finish = new Date();
-				dispatch('timer', currentTimer)
+				dispatch('timer', currentTimer);
 			}
-		}, 5000)
+		}, 5000);
 	});
 </script>
 

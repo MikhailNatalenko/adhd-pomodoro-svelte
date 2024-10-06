@@ -3,9 +3,13 @@
 	import Cookies from 'js-cookie';
 	import { onMount } from 'svelte';
 	import type { Timer } from '$lib/types';
-	import { formatTimeHHMMSS, normalizeTimers } from '$lib/utils';
+	import { formatTimeHHMMSS, fillGaps, collapseTimers } from '$lib/utils';
 
+	////// props /////////////
 	export let timerLogs: Timer[] = [];
+
+	var collapsed = true;
+	var fill_gaps = true;
 	var normalized: Timer[] = [];
 
 	type CachedLog = {
@@ -47,8 +51,12 @@
 		return JSON.stringify(cached);
 	}
 
-	function testCrr(norm: Timer[]) {
-		normalized = normalizeTimers(norm);
+	function normalizeTimers(norm: Timer[], collapse: boolean, fill: boolean) {
+		let timers = norm;
+		if (fill) timers = fillGaps(timers, 'rest');
+		if (collapse) timers = collapseTimers(timers);
+
+		normalized = timers;
 		console.log(normalized);
 	}
 
@@ -77,21 +85,37 @@
 		Cookies.set('logs', serializeLogs(logs), { expires: 31 });
 	}
 
+	function updateParam(param: boolean, name: string) {
+		if (!mounted) return;
+		Cookies.set(name, param ? 'true' : 'false', { expires: 31 });
+	}
+
+	$: updateParam(collapsed, 'collapsed');
+	$: updateParam(fill_gaps, 'fill_gaps');
 	$: updateLogs(timerLogs);
-	$: testCrr(timerLogs);
+	$: normalizeTimers(timerLogs, collapsed, fill_gaps);
 
 	onMount(() => {
 		let logs = Cookies.get('logs');
 		console.log('cookies for logs contain', logs);
-		mounted = true;
 		if (logs == undefined) return;
 
+		collapsed = Cookies.get('collapsed') === 'true';
+		fill_gaps = Cookies.get('fill_gaps') === 'true';
+
 		timerLogs = deserializeLogs(logs);
+		mounted = true;
 	});
 </script>
 
 <button on:click={() => (timerLogs = [])} class="clear">Clear logs</button>
-<span>Active time: </span><span> {formatTimeHHMMSS(totalWorkTime(timerLogs))}</span><br />
+<span>Active time: </span><span> {formatTimeHHMMSS(totalWorkTime(timerLogs))}</span>
+<input type="checkbox" id="collapse" name="collapse" bind:checked={collapsed} />
+<label for="collapse">Collapse</label>
+<input type="checkbox" id="fillRests" name="fill rests gaps" bind:checked={fill_gaps} /><label
+	for="fillRests">Fill gaps</label
+>
+<br />
 
 <div class="logs">
 	{#each normalized as log (log.start)}
@@ -112,6 +136,11 @@
 		color: #482a2a;
 	}
 
+	label {
+		font-family: 'title_roboto', sans-serif;
+		font-size: 14px;
+		color: #775252;
+	}
 	.logs {
 		max-height: calc(1.2em * 23); /* Height for 20 lines */
 		min-height: calc(1.2em * 23); /* Height for 20 lines */

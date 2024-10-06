@@ -110,8 +110,3 @@ export function fillGaps(timers: Timer[], name = 'rest', gapMin: number = 60 * 5
 
 	return output;
 }
-
-export function normalizeTimers(timers: Timer[]): Timer[] {
-	let gapped = fillGaps(timers, 'rest');
-	return collapseTimers(gapped);
-}
