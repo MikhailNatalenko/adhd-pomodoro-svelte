@@ -4,21 +4,14 @@
 
 	import type { Timer, TimerEvent } from '$lib/types';
 	import { dbgParams, prodParams } from '$lib/constants';
+	import { TimerList } from '$lib/timerlog';
 
 	let debug: boolean = false;
 
-	let timerLogs: Timer[] = [];
+	let timerLogs: TimerList;
 
 	function onTimer(event: TimerEvent) {
-		if (timerLogs.length > 0) {
-			//TODO: dirty hack. Propably I should fix it later
-			if (timerLogs[timerLogs.length - 1].start == event.detail.start) {
-				timerLogs[timerLogs.length - 1].finish = event.detail.finish;
-				timerLogs = timerLogs;
-				return;
-			}
-		}
-		timerLogs = [...timerLogs, event.detail];
+		timerLogs = timerLogs.push(event.detail);
 	}
 </script>
 

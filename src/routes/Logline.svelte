@@ -16,9 +16,6 @@
 	let startClock = formatTs(start);
 	$: rest = name === 'rest';
 
-
-
-	$: console.log('logline', start, finish, name, duration, startClock, rest);
 </script>
 
 <snap class="logline" class:rest>

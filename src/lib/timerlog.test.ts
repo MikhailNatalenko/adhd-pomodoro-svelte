@@ -1,4 +1,4 @@
-import { collapseTimers, fillGaps } from './utils';
+import { collapseTimers, fillGaps } from './timerlog';
 import { describe, it, expect } from 'vitest';
 import { Timer } from '$lib/types';
 

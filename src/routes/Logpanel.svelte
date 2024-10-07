@@ -2,87 +2,23 @@
 	import Logline from './Logline.svelte';
 	import Cookies from 'js-cookie';
 	import { onMount } from 'svelte';
-	import type { Timer } from '$lib/types';
-	import { formatTimeHHMMSS, fillGaps, collapseTimers } from '$lib/utils';
+	import type { Timer, CachedLog } from '$lib/types';
+	import { formatTimeHHMMSS } from '$lib/utils';
+	import { TimerList } from '$lib/timerlog';
 
 	////// props /////////////
-	export let timerLogs: Timer[] = [];
+	export let timerLogs: TimerList = new TimerList('');
 
 	var collapsed = true;
 	var fill_gaps = true;
 	var normalized: Timer[] = [];
 
-	type CachedLog = {
-		name: string;
-		start: number;
-		finish: number;
-	};
-
 	let mounted = false;
 
-	function totalWorkTime(timers: Timer[]) {
-		let duration = 0;
-		timers.forEach((element) => {
-			if (element.name == 'work') {
-				duration += (element.finish.getTime() - element.start.getTime()) / 1000;
-			}
-		});
-		return duration;
-	}
-	// Validate this value with a custom type guard (extend to your needs)
-	function validateCachedLogs(arr: any): arr is CachedLog[] {
-		arr.forEach((o: any) => {
-			if (!('name' in o && 'start' in o && 'finish' in o)) return false;
-		});
-		return true;
-	}
-
-	function serializeLogs(timerLogs: Timer[]) {
-		let cached: CachedLog[] = [];
-		timerLogs.forEach((element) => {
-			cached.push({
-				name: element.name,
-				start: Math.floor(element.start.getTime() / 1000),
-				finish: Math.floor(element.finish.getTime() / 1000)
-			});
-		});
-
-		console.log('Serializing logs:', JSON.stringify(cached));
-		return JSON.stringify(cached);
-	}
-
-	function normalizeTimers(norm: Timer[], collapse: boolean, fill: boolean) {
-		let timers = norm;
-		if (fill) timers = fillGaps(timers, 'rest');
-		if (collapse) timers = collapseTimers(timers);
-
-		normalized = timers;
-		console.log(normalized);
-	}
-
-	function deserializeLogs(str: string): Timer[] {
-		const parsed = JSON.parse(str);
-		let cached: Timer[] = [];
-		if (validateCachedLogs(parsed)) {
-			// do something with now correctly typed object
-			parsed.forEach((element) => {
-				cached.push({
-					value: 0,
-					name: element.name,
-					finish: new Date(element.finish * 1000),
-					start: new Date(element.start * 1000)
-				});
-			});
-			console.log('deserialized logs:', cached);
-			return cached;
-		} else {
-			return [];
-		}
-	}
-	function updateLogs(logs: Timer[]) {
+	function updateLogs(logs: TimerList) {
 		if (logs == undefined) return;
 		if (!mounted) return;
-		Cookies.set('logs', serializeLogs(logs), { expires: 31 });
+		Cookies.set('logs', logs.serialize(), { expires: 31 });
 	}
 
 	function updateParam(param: boolean, name: string) {
@@ -90,39 +26,27 @@
 		Cookies.set(name, param ? 'true' : 'false', { expires: 31 });
 	}
 
-	function changeLineType(start : Date)
-	{
-		timerLogs.forEach(timer => {
-			if (timer.start === start)
-			{
-				timer.name = (timer.name === 'rest') ? 'work' : 'rest'; 
-			}
-		});
+	function changeLineType(start: Date) {
+		timerLogs.changeLineType(start);
 		timerLogs = timerLogs;
 	}
 
-	function removeItemAll(arr : any, value: any) {
-
-	}
-
-	function deleteLine(start : Date)
-	{
-		var i = 0;
-		while (i < timerLogs.length) {
-			if (timerLogs[i].start === start) {
-				timerLogs.splice(i, 1);
-			} else {
-				++i;
-			}
-		}
+	function deleteLine(start: Date) {
+		timerLogs.remove(start);
 		timerLogs = timerLogs;
 	}
 
+	function normalize(timers: TimerList) {
+		if (timers == undefined) return [];
+
+		return timers.normalize(collapsed, fill_gaps);
+	}
 	$: updateParam(collapsed, 'collapsed');
 	$: updateParam(fill_gaps, 'fill_gaps');
 	$: updateLogs(timerLogs);
-	$: normalizeTimers(timerLogs, collapsed, fill_gaps);
-	$: rawView = !(collapsed || fill_gaps)
+	$: normalized = normalize(timerLogs);
+
+	$: rawView = !(collapsed || fill_gaps);
 
 	onMount(() => {
 		let logs = Cookies.get('logs');
@@ -132,30 +56,30 @@
 		collapsed = Cookies.get('collapsed') === 'true';
 		fill_gaps = Cookies.get('fill_gaps') === 'true';
 
-		timerLogs = deserializeLogs(logs);
+		timerLogs = new TimerList(logs);
 		mounted = true;
 	});
 </script>
 
-<button on:click={() => (timerLogs = [])} class="clear">Clear logs</button>
-<span>Active time: </span><span> {formatTimeHHMMSS(totalWorkTime(timerLogs))}</span>
+<button on:click={() => (timerLogs = new TimerList(''))} class="clear">Clear logs</button>
+<span>Active time: </span><span> {formatTimeHHMMSS(timerLogs.total())}</span>
 <input type="checkbox" id="collapse" name="collapse" bind:checked={collapsed} />
 <label for="collapse">Collapse</label>
 <input type="checkbox" id="fillRests" name="fill rests gaps" bind:checked={fill_gaps} /><label
 	for="fillRests">Fill gaps</label
 >
 {#if fill_gaps}
-<button on:click={() => (timerLogs = fillGaps(timerLogs, 'rest'))} class="save">Save gaps</button>
+	<button on:click={() => (timerLogs = timerLogs.glueGaps())} class="save">Save gaps</button>
 {/if}
 
 <br />
 
 <div class="logs">
 	{#each normalized as log (log.start)}
-		<Logline {...log} /> 
+		<Logline {...log} />
 		{#if rawView}
-			<button class="mini" hidden={rawView} on:click={() => (changeLineType(log.start))}>ch</button>
-			<button class="mini" hidden={rawView} on:click={() => (deleteLine(log.start))}>x</button>
+			<button class="mini" hidden={rawView} on:click={() => changeLineType(log.start)}>ch</button>
+			<button class="mini" hidden={rawView} on:click={() => deleteLine(log.start)}>x</button>
 		{/if}
 		<br />
 	{/each}

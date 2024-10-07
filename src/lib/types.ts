@@ -12,6 +12,12 @@ export class Timer {
 	}
 }
 
+export type CachedLog = {
+	name: string;
+	start: number;
+	finish: number;
+};
+
 export interface TimerEvent {
 	detail: Timer;
 }
