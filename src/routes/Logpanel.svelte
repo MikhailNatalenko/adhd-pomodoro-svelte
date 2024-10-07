@@ -123,7 +123,7 @@
 		color: #775252;
 	}
 	.logs {
-		/*TODO: calc heght of this element with screen size and not the amount of lines */
+		/*TODO: calc heght of this element with screen size and not the amount of lines  */
 		max-height: calc(1.2em * 23); /* Height for 20 lines */
 		min-height: calc(1.2em * 23); /* Height for 20 lines */
 		overflow-y: auto; /* Enable vertical scrolling if content exceeds max height */
