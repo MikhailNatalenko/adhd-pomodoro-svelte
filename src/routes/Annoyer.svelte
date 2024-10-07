@@ -26,7 +26,7 @@
 
 		intervalId = setInterval(() => {
 			playAlertSound();
-			//just in case. sometimes it does not stop
+			//just in case. sometimes it does not stop.
 			if (!active) {
 				clearInterval(intervalId);
 			}

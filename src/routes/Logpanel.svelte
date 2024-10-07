@@ -1,80 +1,135 @@
 <script lang="ts">
-	import type { TimerLog } from './types.ts';
 	import Logline from './Logline.svelte';
 	import Cookies from 'js-cookie';
 	import { onMount } from 'svelte';
+	import type { Timer, CachedLog } from '$lib/types';
+	import { formatTimeHHMMSS } from '$lib/utils';
+	import { TimerList } from '$lib/timerlog';
 
-	export let timerLogs: TimerLog[] = [];
+	////// props /////////////
+	export let timerLogs: TimerList = new TimerList('');
 
-	type CachedLog = {
-		id: number;
-		name: string;
-		start: number;
-		finish: number;
-	};
+	var collapsed = true;
+	var fill_gaps = true;
+	var normalized: Timer[] = [];
 
 	let mounted = false;
 
-	// Validate this value with a custom type guard (extend to your needs)
-	function validateCachedLogs(arr: any): arr is CachedLog[] {
-		arr.forEach((o: any) => {
-			if (!('id' in o && 'name' in o && 'start' in o && 'finish' in o)) return false;
-		});
-		return true;
-	}
-
-	function serializeLogs(timerLogs: TimerLog[]) {
-		let cached: CachedLog[] = [];
-		timerLogs.forEach((element) => {
-			cached.push({
-				id: element.id,
-				name: element.name,
-				start: Math.floor(element.start.getTime() / 1000),
-				finish: Math.floor(element.finish.getTime() / 1000)
-			});
-		});
-
-		console.log('Serializing logs:', JSON.stringify(cached));
-		return JSON.stringify(cached);
-	}
-
-	function deserializeLogs(str: string): TimerLog[] {
-		const parsed = JSON.parse(str);
-		let cached: TimerLog[] = [];
-		if (validateCachedLogs(parsed)) {
-			// do something with now correctly typed object
-			parsed.forEach((element) => {
-				cached.push({
-					id: element.id,
-					name: element.name,
-					finish: new Date(element.finish * 1000),
-					start: new Date(element.start * 1000)
-				});
-			});
-			console.log('deserialized logs:', cached);
-			return cached;
-		} else {
-			return [];
-		}
-	}
-	function updateLogs(logs: TimerLog[]) {
-		if (timerLogs == undefined) return;
+	function updateLogs(logs: TimerList) {
+		if (logs == undefined) return;
 		if (!mounted) return;
-		Cookies.set('logs', serializeLogs(logs));
+		Cookies.set('logs', logs.serialize(), { expires: 31 });
 	}
 
+	function updateParam(param: boolean, name: string) {
+		if (!mounted) return;
+		Cookies.set(name, param ? 'true' : 'false', { expires: 31 });
+	}
+
+	function changeLineType(start: Date) {
+		timerLogs.changeLineType(start);
+		timerLogs = timerLogs;
+	}
+
+	function deleteLine(start: Date) {
+		timerLogs.remove(start);
+		timerLogs = timerLogs;
+	}
+
+	function normalize(timers: TimerList) {
+		if (timers == undefined) return [];
+
+		return timers.normalize(collapsed, fill_gaps);
+	}
+	$: updateParam(collapsed, 'collapsed');
+	$: updateParam(fill_gaps, 'fill_gaps');
 	$: updateLogs(timerLogs);
+	$: normalized = normalize(timerLogs);
+
+	$: rawView = !(collapsed || fill_gaps);
 
 	onMount(() => {
 		let logs = Cookies.get('logs');
-		console.log('coockies for logs contain', logs);
-		mounted = true;
+		console.log('cookies for logs contain', logs);
 		if (logs == undefined) return;
 
-		timerLogs = deserializeLogs(logs);
+		collapsed = Cookies.get('collapsed') === 'true';
+		fill_gaps = Cookies.get('fill_gaps') === 'true';
+
+		timerLogs = new TimerList(logs);
+		mounted = true;
 	});
 </script>
 
-{#each timerLogs as log}
-	<Logline {...log} />
-{/each}
+<button on:click={() => (timerLogs = new TimerList(''))} class="clear">Clear logs</button>
+<span>Active time: </span><span> {formatTimeHHMMSS(timerLogs.total())}</span>
+<input type="checkbox" id="collapse" name="collapse" bind:checked={collapsed} />
+<label for="collapse">Collapse</label>
+<input type="checkbox" id="fillRests" name="fill rests gaps" bind:checked={fill_gaps} /><label
+	for="fillRests">Fill gaps</label
+>
+{#if fill_gaps}
+	<button on:click={() => (timerLogs = timerLogs.glueGaps())} class="save">Save gaps</button>
+{/if}
+
+<br />
+
+<div class="logs">
+	{#each normalized as log (log.start)}
+		<Logline {...log} />
+		{#if rawView}
+			<button class="mini" hidden={rawView} on:click={() => changeLineType(log.start)}>ch</button>
+			<button class="mini" hidden={rawView} on:click={() => deleteLine(log.start)}>x</button>
+		{/if}
+		<br />
+	{/each}
+</div>
+
+<style>
+	@import './../styles/button.css';
+	@import './../styles/fonts.css';
+	.clear {
+		margin: 10px;
+		background-color: rgb(88, 18, 39);
+	}
+	span {
+		font-family: 'title_roboto', sans-serif;
+		font-size: 20px;
+		color: #482a2a;
+	}
+	.mini {
+		border: none;
+		color: rgb(220, 220, 220);
+		/* padding: 17px 32px; */
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 12px;
+		margin: 0px;
+		cursor: pointer;
+		font-family: 'Roboto-Regular';
+		height: 15px;
+		width: 50px;
+		border-radius: 5px;
+		background-color: rgb(19, 88, 108);
+	}
+
+	.mini:hover {
+		background-color: rgb(58, 140, 163);
+	}
+	label {
+		font-family: 'title_roboto', sans-serif;
+		font-size: 14px;
+		color: #775252;
+	}
+	.logs {
+		/*TODO: calc heght of this element with screen size and not the amount of lines  */
+		max-height: calc(1.2em * 23); /* Height for 20 lines */
+		min-height: calc(1.2em * 23); /* Height for 20 lines */
+		overflow-y: auto; /* Enable vertical scrolling if content exceeds max height */
+		background-color: #fbfffd; /* Background color */
+		border: 1px solid #f9f9f9; /* Border */
+		padding: 10px; /* Padding */
+		border-radius: 8px;
+	}
+</style>

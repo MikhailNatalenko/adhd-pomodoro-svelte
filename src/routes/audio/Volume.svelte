@@ -2,6 +2,7 @@
 	import { setVolume } from './Ringer.svelte';
 	import Cookies from 'js-cookie';
 	import { onMount } from 'svelte';
+	import { base } from '$app/paths';
 
 	let initialVolume: number;
 
@@ -14,7 +15,7 @@
 		console.log('volume', volume);
 		setVolume(volume / 100, true);
 
-		Cookies.set('volume', volume.toString());
+		Cookies.set('volume', volume.toString(), { expires: 31 });
 	}
 
 	function handleMouseUp(event: any) {
@@ -45,7 +46,7 @@
 <label>
 	<div class="container">
 		<button on:click={mute} class="leftbutton"
-			><img src="../volume_mute.svg" alt="Mute icon" />
+			><img src="{base}/volume_mute.svg" alt="Mute icon" />
 		</button>
 		<input
 			class="slider bar"
@@ -55,7 +56,7 @@
 			max="100"
 			on:mouseup={handleMouseUp}
 		/>
-		<button on:click={volumemax}><img src="../volume_up.svg" alt="Volume max icon" /></button>
+		<button on:click={volumemax}><img src="{base}/volume_up.svg" alt="Volume max icon" /></button>
 	</div>
 </label>
 

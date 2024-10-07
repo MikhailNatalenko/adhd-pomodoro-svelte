@@ -1,13 +1,14 @@
 <script lang="ts" context="module">
-	import { TimerState } from './types';
-
+	import type { TimerStateType } from '$lib/types';
+	import { TimerState } from '$lib/types';
+	import { base } from '$app/paths';
 	let timerState = TimerState.STOPPED;
 
-	const faviconStoped = '/tea.png';
-	const faviconRunning = '/clock_red.png';
-	const faviconWaitingForStop = '/clock_yellow.png';
+	const faviconStoped = base + '/tea.png';
+	const faviconRunning = base + '/clock_red.png';
+	const faviconWaitingForStop = base + '/clock_yellow.png';
 
-	export function changeFavicon(icon: TimerState) {
+	export function changeFavicon(icon: TimerStateType) {
 		console.log('changeFavicon', icon);
 		if (typeof document === 'undefined' || document === null) return;
 

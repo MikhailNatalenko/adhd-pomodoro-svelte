@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<link id="favicon" rel="icon" type="image/png" href="tea.png" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	
+		<link href="./_app/immutable/assets/2.BascEnDp.css" rel="stylesheet">
+		<link rel="modulepreload" href="./_app/immutable/entry/start.De2ElJpU.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/entry.WSjEjhzh.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/scheduler.DfcxTzeO.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/paths.ZpvenBZT.js">
+		<link rel="modulepreload" href="./_app/immutable/entry/app.CDC4KwSZ.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/index.cws5nFLo.js">
+		<link rel="modulepreload" href="./_app/immutable/nodes/0.CiTwRWw3.js">
+		<link rel="modulepreload" href="./_app/immutable/nodes/2.BcfcEPmO.js">
+</head>
+
+<body data-sveltekit-preload-data="hover">
+	<div style="display: contents">  <main class="svelte-dj43kz"><div class="centered-div"><h1 class="logo svelte-dj43kz" data-svelte-h="svelte-cxq7y3">Let&#39;s Pomodoro!</h1> <div><div class="grid-container svelte-1avocgd"><div class="item svelte-1avocgd"><span class="label svelte-1avocgd" data-svelte-h="svelte-19szg5l">Active</span><br> <button class="work svelte-nc29tu">5 min</button> <br><button class="work svelte-nc29tu">10 min</button> <br><button class="work svelte-nc29tu">15 min</button> <br><button class="work svelte-nc29tu">20 min</button> <br><button class="work svelte-nc29tu">25 min</button> <br></div> <div class="clock svelte-x7f3g1"><div aria-hidden="true"><button id="watch" class="svelte-9y7wid">00:00</button></div>  <div aria-hidden="true"><label><div class="container svelte-14xuhg1"><button class="leftbutton svelte-14xuhg1" data-svelte-h="svelte-3ybpa7"><img src="./volume_mute.svg" alt="Mute icon"></button> <input class="slider bar svelte-14xuhg1" type="range" min="0" max="100"> <button class="svelte-14xuhg1" data-svelte-h="svelte-vae9t2"><img src="./volume_up.svg" alt="Volume max icon"></button></div> </label><br></div>  </div> <div class="item svelte-1avocgd"><span class="label svelte-1avocgd" data-svelte-h="svelte-1gtata5">Rest</span><br> <button class="rest svelte-nc29tu">5 min</button> <br><button class="rest svelte-nc29tu">10 min</button> <br><button class="rest svelte-nc29tu">15 min</button> <br><button class="rest svelte-nc29tu">20 min</button> <br><button class="rest svelte-nc29tu">25 min</button> <br></div></div> </div>  <button class="clear svelte-1rgi6sd" data-svelte-h="svelte-1t59hv2">Clear logs</button> <span class="svelte-1rgi6sd" data-svelte-h="svelte-18pz33x">Active time: </span><span class="svelte-1rgi6sd">0 sec</span><br> <div class="logs svelte-1rgi6sd"> </div></div></main> <div class="debug-div svelte-dj43kz"><label id="debug">Debug:<input type="checkbox"></label> </div> 
+			
+			<script>
+				{
+					__sveltekit_qjg2s7 = {
+						base: new URL(".", location).pathname.slice(0, -1)
+					};
+
+					const element = document.currentScript.parentElement;
+
+					const data = [null,null];
+
+					Promise.all([
+						import("./_app/immutable/entry/start.De2ElJpU.js"),
+						import("./_app/immutable/entry/app.CDC4KwSZ.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 2],
+							data,
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+</body>
+
+</html>

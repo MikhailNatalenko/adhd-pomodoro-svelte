@@ -3,7 +3,8 @@
 
 	//TODO: configurable story is better
 	// Loading the sound file
-	const pathToSound = '/ring2.wav';
+	import { base } from '$app/paths';
+	const pathToSound = base + '/ring2.wav';
 
 	let innerPlayer = function () {};
 
