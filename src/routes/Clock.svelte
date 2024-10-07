@@ -3,38 +3,24 @@
 	import { playAlertSound } from './audio/Ringer.svelte';
 	import Tooltip from './Tooltip.svelte';
 	import { formatTimeClock } from '$lib/utils';
+	import { PreciseTimer } from '$lib/precise_timer';
 
 	export let time = 0;
-	$: runTimer(time);
-
+	var timer: PreciseTimer;
+	var remainedSeconds = 0;
 	const dispatch = createEventDispatcher();
 
-	let startTs = new Date();
-	let currentTimerValue = 0;
-	let intervalId = 0;
+	$: runTimer(time);
 
-	function runTimer(timeValue: number) {
-		console.log('runTimer', timeValue);
-		startTs = new Date();
-		clearInterval(intervalId);
-		currentTimerValue = timeValue;
-
-		if (time == 0) {
-			//stop timer, nothing to run
-			return;
-		}
-
-		intervalId = setInterval(() => {
-			let remainingTime = time - Math.floor((Date.now() - startTs.getTime()) / 1000);
-			if (remainingTime <= 0) {
-				alarming();
-				clearInterval(intervalId);
-				return;
-			}
-			currentTimerValue = remainingTime;
-		}, 500);
+	function runTimer(duration: number) {
+		if (timer != undefined) timer.stop();
+		timer = new PreciseTimer(duration, tick, alarming);
+		remainedSeconds = duration;
 	}
 
+	function tick(remain: number) {
+		remainedSeconds = remain;
+	}
 	function alarming() {
 		playAlertSound();
 		dispatch('alarming');
@@ -46,7 +32,7 @@
 </script>
 
 <Tooltip title="stop timer">
-	<button id="watch" on:click={stop}>{formatTimeClock(currentTimerValue)} </button>
+	<button id="watch" on:click={stop}>{formatTimeClock(remainedSeconds)} </button>
 </Tooltip>
 
 <style>
