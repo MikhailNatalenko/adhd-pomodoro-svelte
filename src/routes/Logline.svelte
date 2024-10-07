@@ -15,7 +15,6 @@
 
 	let startClock = formatTs(start);
 	$: rest = name === 'rest';
-
 </script>
 
 <snap class="logline" class:rest>
