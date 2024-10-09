@@ -14,6 +14,7 @@
 
 	function runTimer(duration: number) {
 		if (timer != undefined) timer.stop();
+		console.log('RUUN!');
 		timer = new PreciseTimer(duration, tick, alarming);
 		remainedSeconds = duration;
 	}

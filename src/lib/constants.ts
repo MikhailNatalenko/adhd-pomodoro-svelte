@@ -9,3 +9,7 @@ export const prodParams = {
 	afterClockTimeoutS: 60 * 15, //15 minutes
 	timersMultiplier: 1 * 60 // minute
 };
+
+export function getParam(debug: boolean) {
+	return debug ? dbgParams : prodParams;
+}

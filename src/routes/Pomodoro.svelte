@@ -12,25 +12,23 @@
 	import { createEventDispatcher } from 'svelte';
 	import { TimerState, Timer } from '$lib/types';
 	import { changeFavicon } from './Favicon.svelte';
+	import { getParam } from '$lib/constants';
 
 	const dispatch = createEventDispatcher();
 
-	export let timersMultiplier: number;
-	export let afterClockIntervaltS: number;
-	export let afterClockTimeoutS: number;
-
+	// decrease timings or not
+	export let debugFlag: boolean;
+	// state of pomodoro
 	let timerState = TimerState.STOPPED;
-
-	$: changeFavicon(timerState);
-
 	// object of Timer to send on finish
 	let currentTimer = new Timer();
-
 	// time for visual clock
 	let pomodoroClock = 0;
 
+	$: changeFavicon(timerState);
+
 	function setPomodoroClock(num) {
-		pomodoroClock = num * timersMultiplier;
+		pomodoroClock = num * getParam(debugFlag).timersMultiplier;
 	}
 
 	function startTimer(event: Any) {
@@ -85,7 +83,12 @@
 	});
 </script>
 
-<Controls active={timerState === TimerState.STOPPED} on:start={startTimer} on:stop={stopTimer}>
+<Controls
+	{debugFlag}
+	active={timerState === TimerState.STOPPED}
+	on:start={startTimer}
+	on:stop={stopTimer}
+>
 	<div class="clock">
 		<Clock time={pomodoroClock} on:alarming={alarming} on:stop={stopTimerFromClock} />
 		<Tooltip title="Volume">
@@ -101,12 +104,7 @@
 	</div>
 </Controls>
 
-<Annoyer
-	active={timerState === TimerState.WAITING_FOR_STOP}
-	intervalS={afterClockIntervaltS}
-	timeoutS={afterClockTimeoutS}
-	on:off={stopTimer}
-/>
+<Annoyer active={timerState === TimerState.WAITING_FOR_STOP} {debugFlag} on:off={stopTimer} />
 
 <style>
 	@import './../styles/button.css';

@@ -19,11 +19,7 @@
 	<div class="centered-div">
 		<h1 class="logo">Let's Pomodoro!</h1>
 
-		{#if debug}
-			<Pomodoro {...dbgParams} on:timer={onTimer} />
-		{:else}
-			<Pomodoro {...prodParams} on:timer={onTimer} />
-		{/if}
+		<Pomodoro debugFlag={debug} on:timer={onTimer} />
 
 		<Logpanel bind:timerLogs />
 	</div>

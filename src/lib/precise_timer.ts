@@ -1,7 +1,7 @@
 export class PreciseTimer {
 	intervalId = 0;
 	duration = 0;
-	start = new Date();
+	start = 0;
 	remain = 0;
 
 	onSec = (n: number) => {};
@@ -11,23 +11,19 @@ export class PreciseTimer {
 		duration: number,
 		onSec: (n: number) => void,
 		onAlarm: () => void,
-		smallIntervalMs = 500
+		smallIntervalMs = 300
 	) {
 		this.duration = duration;
 		this.remain = duration;
+
 		if (duration > 0) {
 			this.onSec = onSec;
 			this.onAlarm = onAlarm;
-			this.start = new Date();
+			this.start = Date.now();
 
 			this.intervalId = setInterval(() => {
-				let remainingTime = this.duration - Math.floor((Date.now() - this.start.getTime()) / 1000);
-				console.log(
-					'interval id {}, duration {}, remaining',
-					this.intervalId,
-					this.duration,
-					remainingTime
-				);
+				let remainingTime = this.duration - Math.ceil((Date.now() - this.start) / 1000);
+
 				if (remainingTime != this.remain) {
 					onSec(this.remain);
 					this.remain = remainingTime;
