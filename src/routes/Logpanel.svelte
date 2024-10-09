@@ -24,6 +24,7 @@
 	function updateParam(param: boolean, name: string) {
 		if (!mounted) return;
 		Cookies.set(name, param ? 'true' : 'false', { expires: 31 });
+		normalized = normalize(timerLogs);
 	}
 
 	function changeLineType(start: Date) {

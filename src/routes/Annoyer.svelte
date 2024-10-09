@@ -33,7 +33,8 @@
 		}, intervalS * 1000);
 
 		timeoutId = setTimeout(() => {
-			act = false;
+			active = false;
+			clearInterval(intervalId)
 			off();
 		}, timeoutS * 1000);
 	}
