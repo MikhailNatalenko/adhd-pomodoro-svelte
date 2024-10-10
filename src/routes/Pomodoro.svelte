@@ -36,6 +36,8 @@
 		setPomodoroClock(event.detail.timer);
 
 		currentTimer = new Timer(event.detail.timer, event.detail.name);
+		currentTimer.finish = new Date();
+		dispatch('timer', currentTimer);
 	}
 
 	function alarming() {

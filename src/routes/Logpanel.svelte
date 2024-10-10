@@ -5,6 +5,7 @@
 	import type { Timer, CachedLog } from '$lib/types';
 	import { formatTimeHHMMSS } from '$lib/utils';
 	import { TimerList } from '$lib/timerlog';
+	import { fade } from 'svelte/transition';
 
 	////// props /////////////
 	export let timerLogs: TimerList = new TimerList('');
@@ -12,7 +13,6 @@
 	var collapsed = true;
 	var fill_gaps = true;
 	var normalized: Timer[] = [];
-
 	let mounted = false;
 
 	function updateLogs(logs: TimerList) {
@@ -74,11 +74,11 @@
 </div>
 
 <div class="logs">
-	{#each normalized as log (log.start)}
+	{#each [...normalized].reverse() as log (log.start)}
 		<Logline {...log} />
 		{#if rawView}
-			<button class="mini" hidden={rawView} on:click={() => changeLineType(log.start)}>ch</button>
-			<button class="mini" hidden={rawView} on:click={() => deleteLine(log.start)}>x</button>
+				<button transition:fade={{ duration: 100 }} class="mini" hidden={rawView} on:click={() => changeLineType(log.start)}>ch</button>
+				<button transition:fade={{ duration: 100 }} class="mini cross" hidden={rawView} on:click={() => deleteLine(log.start)}>x</button>
 		{/if}
 		<br />
 	{/each}
@@ -99,7 +99,6 @@
 	.mini {
 		border: none;
 		color: rgb(220, 220, 220);
-		/* padding: 17px 32px; */
 		text-align: center;
 		text-decoration: none;
 		display: inline-block;
@@ -111,6 +110,11 @@
 		width: 50px;
 		border-radius: 5px;
 		background-color: rgb(19, 88, 108);
+	}
+
+	.cross {
+		width: 15px;
+		background-color: rgb(158, 44, 44);
 	}
 
 	.mini:hover {

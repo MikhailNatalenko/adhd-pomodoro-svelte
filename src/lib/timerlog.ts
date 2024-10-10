@@ -120,14 +120,19 @@ export class TimerList {
 	}
 
 	push(timer: Timer): TimerList {
+		this.list.forEach(timer => {
+			timer.toplog = false
+		});
 		if (this.list.length > 0) {
 			//TODO: dirty hack. Propably I should fix it later
 			if (this.list[this.list.length - 1].start == timer.start) {
 				this.list[this.list.length - 1].finish = timer.finish;
 				this.list = this.list;
+				timer.toplog = true;
 				return this;
 			}
 		}
+		timer.toplog = true;
 		this.list.push(timer);
 		return this;
 	}
