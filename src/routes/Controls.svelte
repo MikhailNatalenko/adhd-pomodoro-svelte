@@ -4,7 +4,7 @@
 
 	const dispatch = createEventDispatcher();
 
-	let timers = [5, 10, 15, 20, 25];
+	let timers = [5, 10, 15, 20, 25, 120];
 
 	// @ts-ignore
 	function handleTimerStart(event) {
