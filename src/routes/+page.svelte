@@ -3,7 +3,6 @@
 	import Logpanel from './Logpanel.svelte';
 
 	import type { Timer, TimerEvent } from '$lib/types';
-	import { dbgParams, prodParams } from '$lib/constants';
 	import { TimerList } from '$lib/timerlog';
 
 	let debug: boolean = false;
@@ -16,24 +15,45 @@
 </script>
 
 <main>
-	<div class="centered-div">
-		<h1 class="logo">Let's Pomodoro!</h1>
-
-		<Pomodoro debugFlag={debug} on:timer={onTimer} />
-
-		<Logpanel bind:timerLogs />
+	<div class="container">		
+		<div class="pomodoro" >
+			<h1 class="logo">Let's Pomodoro!</h1>
+			<Pomodoro debugFlag={debug} on:timer={onTimer} />
+		</div>
+		<div class="logs">
+			<Logpanel bind:timerLogs />
+		</div>
 	</div>
 </main>
-<div class="debug-div">
-	<label id="debug"> Debug:<input type="checkbox" bind:checked={debug} /> </label>
-</div>
-
-<style>
-	@import './../styles/fonts.css';
+	<div class="debug-div">
+		<label id="debug"> Debug:<input type="checkbox" bind:checked={debug} /> </label>
+	</div>
+	
+	<style>
+		@import './../styles/fonts.css';
 
 	main {
 		display: flex;
-		justify-content: center; /* Выравнивание по центру горизонтально */
+		justify-content: center;
+	}
+	
+	.container {
+		height: 100vh;
+		flex-direction: column;
+		display: flex;
+		max-width: 70vw;
+	}
+
+	
+	.pomodoro {
+		height: 400px;
+	}
+
+	.logs {
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		max-width: 70vw;
 	}
 	.logo {
 		font-family: 'title_roboto', sans-serif;

@@ -52,28 +52,26 @@
 	onMount(() => {
 		let logs = Cookies.get('logs');
 		console.log('cookies for logs contain', logs);
-		if (logs == undefined) return;
-
 		collapsed = Cookies.get('collapsed') === 'true';
 		fill_gaps = Cookies.get('fill_gaps') === 'true';
 
-		timerLogs = new TimerList(logs);
+		timerLogs = new TimerList(logs == undefined ? "" : logs);
 		mounted = true;
 	});
 </script>
 
-<button on:click={() => (timerLogs = new TimerList(''))} class="clear">Clear logs</button>
-<span>Active time: </span><span> {formatTimeHHMMSS(timerLogs.total())}</span>
-<input type="checkbox" id="collapse" name="collapse" bind:checked={collapsed} />
-<label for="collapse">Collapse</label>
-<input type="checkbox" id="fillRests" name="fill rests gaps" bind:checked={fill_gaps} /><label
+<div>
+	<button on:click={() => (timerLogs = new TimerList(''))} class="clear">Clear logs</button>
+	<span>Active time: </span><span> {formatTimeHHMMSS(timerLogs.total())}</span>
+	<input type="checkbox" id="collapse" name="collapse" bind:checked={collapsed} />
+	<label for="collapse">Collapse</label>
+	<input type="checkbox" id="fillRests" name="fill rests gaps" bind:checked={fill_gaps} /><label
 	for="fillRests">Fill gaps</label
->
-{#if fill_gaps}
+	>
+	{#if fill_gaps}
 	<button on:click={() => (timerLogs = timerLogs.glueGaps())} class="save">Save gaps</button>
-{/if}
-
-<br />
+	{/if}
+</div>
 
 <div class="logs">
 	{#each normalized as log (log.start)}
@@ -124,11 +122,8 @@
 		color: #775252;
 	}
 	.logs {
-		/*TODO: calc heght of this element with screen size and not the amount of lines*/
-		max-height: calc(1.2em * 23); /* Height for 20 lines */
-		min-height: calc(1.2em * 23); /* Height for 20 lines */
-		overflow-y: auto; /* Enable vertical scrolling if content exceeds max height */
-		background-color: #fbfffd; /* Background color */
+		overflow-y: auto; 
+		background-color: #f4f8f6; /* Background color */
 		border: 1px solid #f9f9f9; /* Border */
 		padding: 10px; /* Padding */
 		border-radius: 8px;

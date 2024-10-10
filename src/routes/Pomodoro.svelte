@@ -84,7 +84,6 @@
 </script>
 
 <Controls
-	{debugFlag}
 	active={timerState === TimerState.STOPPED}
 	on:start={startTimer}
 	on:stop={stopTimer}
