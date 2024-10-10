@@ -5,7 +5,7 @@
 	export let start: Date;
 	export let finish: Date;
 	export let name: string;
-	export let toplog: boolean; 
+	export let toplog: boolean;
 	function formatTs(time: Date) {
 		let minutes = time.getHours().toString().padStart(2, '0');
 		let seconds = time.getMinutes().toString().padStart(2, '0');

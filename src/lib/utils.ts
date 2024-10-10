@@ -2,14 +2,18 @@ import { Timer } from '$lib/types';
 
 /// seconds -> 00:00
 export function formatTimeClock(time: number) {
-    let minutes = Math.floor(time / 60);
-	let seconds = Math.floor(time % 60).toString().padStart(2, '0');
-    let minStr = minutes.toString().padStart(2, '0');
-    if (minutes > 60) {
+	let minutes = Math.floor(time / 60);
+	let seconds = Math.floor(time % 60)
+		.toString()
+		.padStart(2, '0');
+	let minStr = minutes.toString().padStart(2, '0');
+	if (minutes > 60) {
 		let hour = Math.floor(minutes / 60);
-        minStr = Math.floor(minutes % 60).toString().padStart(2, '0');
+		minStr = Math.floor(minutes % 60)
+			.toString()
+			.padStart(2, '0');
 		return `${hour}:${minStr}:${seconds}`;
-    }
+	}
 	return `${minStr}:${seconds}`;
 }
 

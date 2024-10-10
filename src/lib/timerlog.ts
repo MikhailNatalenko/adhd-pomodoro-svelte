@@ -120,8 +120,8 @@ export class TimerList {
 	}
 
 	push(timer: Timer): TimerList {
-		this.list.forEach(timer => {
-			timer.toplog = false
+		this.list.forEach((timer) => {
+			timer.toplog = false;
 		});
 		if (this.list.length > 0) {
 			//TODO: dirty hack. Propably I should fix it later

@@ -85,11 +85,7 @@
 	});
 </script>
 
-<Controls
-	active={timerState === TimerState.STOPPED}
-	on:start={startTimer}
-	on:stop={stopTimer}
->
+<Controls active={timerState === TimerState.STOPPED} on:start={startTimer} on:stop={stopTimer}>
 	<div class="clock">
 		<Clock time={pomodoroClock} on:alarming={alarming} on:stop={stopTimerFromClock} />
 		<Tooltip title="Volume">

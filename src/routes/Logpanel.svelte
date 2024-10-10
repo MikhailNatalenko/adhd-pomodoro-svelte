@@ -55,7 +55,7 @@
 		collapsed = Cookies.get('collapsed') === 'true';
 		fill_gaps = Cookies.get('fill_gaps') === 'true';
 
-		timerLogs = new TimerList(logs == undefined ? "" : logs);
+		timerLogs = new TimerList(logs == undefined ? '' : logs);
 		mounted = true;
 	});
 </script>
@@ -66,10 +66,10 @@
 	<input type="checkbox" id="collapse" name="collapse" bind:checked={collapsed} />
 	<label for="collapse">Collapse</label>
 	<input type="checkbox" id="fillRests" name="fill rests gaps" bind:checked={fill_gaps} /><label
-	for="fillRests">Fill gaps</label
+		for="fillRests">Fill gaps</label
 	>
 	{#if fill_gaps}
-	<button on:click={() => (timerLogs = timerLogs.glueGaps())} class="save">Save gaps</button>
+		<button on:click={() => (timerLogs = timerLogs.glueGaps())} class="save">Save gaps</button>
 	{/if}
 </div>
 
@@ -77,8 +77,18 @@
 	{#each [...normalized].reverse() as log (log.start)}
 		<Logline {...log} />
 		{#if rawView}
-				<button transition:fade={{ duration: 100 }} class="mini" hidden={rawView} on:click={() => changeLineType(log.start)}>ch</button>
-				<button transition:fade={{ duration: 100 }} class="mini cross" hidden={rawView} on:click={() => deleteLine(log.start)}>x</button>
+			<button
+				transition:fade={{ duration: 100 }}
+				class="mini"
+				hidden={rawView}
+				on:click={() => changeLineType(log.start)}>ch</button
+			>
+			<button
+				transition:fade={{ duration: 100 }}
+				class="mini cross"
+				hidden={rawView}
+				on:click={() => deleteLine(log.start)}>x</button
+			>
 		{/if}
 		<br />
 	{/each}
@@ -126,7 +136,7 @@
 		color: #775252;
 	}
 	.logs {
-		overflow-y: auto; 
+		overflow-y: auto;
 		background-color: #f4f8f6; /* Background color */
 		border: 1px solid #f9f9f9; /* Border */
 		padding: 10px; /* Padding */

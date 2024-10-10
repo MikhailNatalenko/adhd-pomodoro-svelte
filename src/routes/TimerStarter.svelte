@@ -49,12 +49,16 @@
 	}
 
 	@keyframes example {
-		from {background-color: #554242;}
-		to {background-color: burlywood;}
+		from {
+			background-color: #554242;
+		}
+		to {
+			background-color: burlywood;
+		}
 	}
 
 	button:disabled.pressed {
-		background-color: burlywood;  
+		background-color: burlywood;
 		animation-name: example;
 		animation-duration: 0.4s;
 	}

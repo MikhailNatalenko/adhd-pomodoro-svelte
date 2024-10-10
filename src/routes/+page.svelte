@@ -15,8 +15,8 @@
 </script>
 
 <main>
-	<div class="container">		
-		<div class="pomodoro" >
+	<div class="container">
+		<div class="pomodoro">
 			<h1 class="logo">Let's Pomodoro!</h1>
 			<Pomodoro debugFlag={debug} on:timer={onTimer} />
 		</div>
@@ -25,18 +25,18 @@
 		</div>
 	</div>
 </main>
-	<div class="debug-div">
-		<label id="debug"> Debug:<input type="checkbox" bind:checked={debug} /> </label>
-	</div>
-	
-	<style>
-		@import './../styles/fonts.css';
+<div class="debug-div">
+	<label id="debug"> Debug:<input type="checkbox" bind:checked={debug} /> </label>
+</div>
+
+<style>
+	@import './../styles/fonts.css';
 
 	main {
 		display: flex;
 		justify-content: center;
 	}
-	
+
 	.container {
 		height: 100vh;
 		flex-direction: column;
@@ -44,7 +44,6 @@
 		max-width: 70vw;
 	}
 
-	
 	.pomodoro {
 		height: 400px;
 	}
