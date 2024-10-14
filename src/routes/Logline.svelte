@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { formatTimeLogline } from '$lib/utils';
-	import { fade } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher();
@@ -8,7 +8,7 @@
 	export let start: Date;
 	export let finish: Date;
 	export let name: string;
-	export let rawView : boolean;
+	export let rawView: boolean;
 	export let toplog: boolean = false;
 
 	function formatTs(time: Date) {
@@ -23,15 +23,15 @@
 	$: rest = name === 'rest';
 
 	function changeType(start: Date) {
-		dispatch('change', start)
+		dispatch('change', start);
 	}
 
 	function deleteItem(start: Date) {
-		dispatch('remove', start)
+		dispatch('remove', start);
 	}
 </script>
 
-<snap transition:fade={{ duration: 450 }} class:toplog class="logline" class:rest>
+<snap class:toplog class="logline" class:rest> 
 	<snap class="time work">{startClock}</snap>
 	<snap>
 		{#if rest}
@@ -41,24 +41,21 @@
 		{/if}
 	</snap>
 	<snap class="duration">{formatTimeLogline(duration)}</snap>
-	{#if rawView}
-	<button
-		transition:fade={{ duration: 100 }}
-		class="mini"
-		hidden={rawView}
-		on:click={() => changeType(start)}>ch</button
-	>
-	<button
-		transition:fade={{ duration: 100 }}
-		class="mini cross"
-		hidden={rawView}
-		on:click={() => deleteItem(start)}>x</button
-	>
-{/if}
-
-
+	{#if rawView && !toplog}
+		<button
+			transition:fade={{ duration: 100 }}
+			class="mini"
+			hidden={rawView}
+			on:click={() => changeType(start)}>ch</button
+		>
+		<button
+			transition:fade={{ duration: 100 }}
+			class="mini cross"
+			hidden={rawView}
+			on:click={() => deleteItem(start)}>x</button
+		>
+	{/if}
 </snap>
-
 
 <style>
 	@import './../styles/fonts.css';
@@ -88,17 +85,24 @@
 		font-weight: bold;
 	} */
 
-	
 	@keyframes greenOne {
-		from {color: black;}
-		to {color: #83b37f;}
+		from {
+			color: black;
+		}
+		to {
+			color: #83b37f;
+		}
 	}
 
 	@keyframes blackOne {
-		from {color: #83b37f;}
-		to {color: black;}
+		from {
+			color: #83b37f;
+		}
+		to {
+			color: black;
+		}
 	}
-	.rest.toplog {
+	/* .rest.toplog {
 		animation: greenOne;
 		animation-duration: 1s;
 	}
@@ -106,5 +110,30 @@
 	.toplog {
 		animation: blackOne;
 		animation-duration: 1s;
+	} */
+
+	.mini {
+		border: none;
+		color: rgb(220, 220, 220);
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 12px;
+		margin: 0px;
+		cursor: pointer;
+		font-family: 'Roboto-Regular';
+		height: 15px;
+		width: 50px;
+		border-radius: 5px;
+		background-color: rgb(19, 88, 108);
+	}
+
+	.cross {
+		width: 15px;
+		background-color: rgb(158, 44, 44);
+	}
+
+	.mini:hover {
+		background-color: rgb(58, 140, 163);
 	}
 </style>

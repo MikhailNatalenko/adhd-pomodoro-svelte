@@ -69,21 +69,30 @@ function validateCachedLogs(arr: any): arr is CachedLog[] {
 	return true;
 }
 
-export function parseTimerList(str: string) : TimerList {
-	let list: Timer[] = []
+export function createTimerFromDuration(dur: number, name: string) {
+	//TODO: propably it's possible make cleaner
+	let start = new Date(new Date().getTime() - dur * 1000);
+
+	let timer = new Timer(0, name, start, new Date());
+	timer.setDuration(dur);
+	return timer;
+}
+
+export function parseTimerList(str: string): TimerList {
+	let list: Timer[] = [];
 	try {
 		const parsed = JSON.parse(str);
 
 		let cached: Timer[] = [];
 		if (validateCachedLogs(parsed)) {
 			// do something with now correctly typed object
-		parsed.forEach((element) => {
-			cached.push(
-				new Timer(
-					0,
-					element.name,
-					new Date(element.start * 1000),
-					new Date(element.finish * 1000)
+			parsed.forEach((element) => {
+				cached.push(
+					new Timer(
+						0,
+						element.name,
+						new Date(element.start * 1000),
+						new Date(element.finish * 1000)
 					)
 				);
 			});
@@ -93,7 +102,7 @@ export function parseTimerList(str: string) : TimerList {
 	} catch (error) {
 		list = [];
 	}
-	return new TimerList(list)
+	return new TimerList(list);
 }
 export class TimerList {
 	public list: Timer[] = [];
@@ -103,11 +112,11 @@ export class TimerList {
 	work_name: string = 'work';
 
 	constructor(list: Timer[], active?: Timer) {
-		this.list = fillGaps(list, this.rest_name);;
+		this.list = fillGaps(list, this.rest_name);
 		this.active = active;
 	}
 
-	normalize(collapse: boolean, fill: boolean) {
+	normalize(collapse: boolean) {
 		var timers = fillGaps(this.list, 'rest');
 		if (collapse) timers = collapseTimers(timers);
 
@@ -128,8 +137,16 @@ export class TimerList {
 		return JSON.stringify(cached);
 	}
 
-	setActive(timer: Timer): TimerList {
-		this.active = timer;
+	setActive(active: Timer): TimerList {
+		this.active = active;
+		return this.glueGaps();
+	}
+
+	setActiveDur(_duration: number): TimerList {
+		if (this.active) {
+			this.active.finish = new Date();
+			return this;
+		}
 		return this;
 	}
 
@@ -148,12 +165,14 @@ export class TimerList {
 		return this;
 	}
 
-	changeLineType(start: Date) {
+	changeLineType(start: Date) : TimerList {
 		this.list.forEach((timer) => {
 			if (timer.start === start) {
 				timer.name = timer.name === this.rest_name ? this.work_name : this.rest_name;
 			}
 		});
+
+		return this
 	}
 
 	remove(start: Date) {
@@ -183,8 +202,8 @@ export class TimerList {
 		return duration;
 	}
 
-	// glueGaps(): TimerList {
-	// 	this.list = fillGaps(this.list, this.rest_name);
-	// 	return this;
-	// }
+	glueGaps(): TimerList {
+		this.list = fillGaps(this.list, this.rest_name);
+		return this;
+	}
 }

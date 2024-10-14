@@ -106,6 +106,18 @@ describe('collapse timers test', () => {
 		let output = collapseTimers(input);
 		expect(output).toStrictEqual([timer1, outTimer]);
 	});
+
+	it('w + r + r + douplicat r', () => {
+		let input = [timer1, timer2rest, timer3rest, timer3rest];
+
+		var outTimer = new Timer();
+		outTimer.start = timer2rest.start;
+		outTimer.finish = timer3rest.finish;
+		outTimer.name = 'rest';
+
+		let output = collapseTimers(input);
+		expect(output).toStrictEqual([timer1, outTimer]);
+	});
 });
 
 describe('collapse timers test check intervals gaps', () => {
@@ -168,7 +180,6 @@ describe('fill gaps', () => {
 	});
 });
 
-
 describe('check durationS', () => {
 	var timer1 = new Timer();
 
@@ -184,7 +195,7 @@ describe('check durationS', () => {
 	var timer2rest = new Timer();
 	timer2rest.start = new Date(Date.parse('01 Jan 1970 00:20:00 GMT'));
 	timer2rest.finish = new Date(Date.parse('01 Jan 1970 00:21:00 GMT'));
-	timer2rest.name = "rest";
+	timer2rest.name = 'rest';
 
 	var timer3work = new Timer();
 	timer3work.start = new Date(Date.parse('01 Jan 1970 00:40:00 GMT'));
@@ -196,37 +207,47 @@ describe('check durationS', () => {
 	timer3rest.finish = new Date(Date.parse('01 Jan 1970 00:40:10 GMT'));
 	timer3rest.name = 'rest';
 
-
 	// it ()
 	it('w + w + w', () => {
-		let list = new TimerList([timer1, timer2work, timer3work])
+		let list = new TimerList([timer1, timer2work, timer3work]);
 
-		
 		let output = list.total();
 		expect(output).toEqual(80);
 	});
 
 	it('w + w + aw', () => {
-		let list = new TimerList([timer1, timer2work], timer3work)
+		let list = new TimerList([timer1, timer2work], timer3work);
 
-		
 		let output = list.total();
 		expect(output).toEqual(80);
 	});
 
 	it('w + r + aw', () => {
-		let list = new TimerList([timer1, timer2rest], timer3work)
+		let list = new TimerList([timer1, timer2rest], timer3work);
 
-		
 		let output = list.total();
 		expect(output).toEqual(20);
 	});
 
 	it('w + r + ar', () => {
-		let list = new TimerList([timer1, timer2rest], timer3rest)
+		let list = new TimerList([timer1, timer2rest], timer3rest);
 
-		
 		let output = list.total();
 		expect(output).toEqual(10);
+	});
+});
+
+describe('check setDuration', () => {
+	var timer1 = new Timer();
+
+	timer1.start = new Date(Date.parse('01 Jan 1970 00:00:00 GMT'));
+	timer1.finish = new Date(Date.parse('01 Jan 1970 00:00:01 GMT'));
+	timer1.name = 'work';
+
+	// it ()
+	it('set 10 sec', () => {
+		timer1.setDuration(10);
+
+		expect(timer1.finish).toEqual(new Date(Date.parse('01 Jan 1970 00:00:10 GMT')));
 	});
 });

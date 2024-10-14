@@ -11,6 +11,9 @@ export class Timer {
 		this.value = value;
 	}
 
+	setDuration(dur: number) {
+		this.finish = new Date(this.start.getTime() + dur * 1000);
+	}
 	durationS() {
 		return (this.finish.getTime() - this.start.getTime()) / 1000;
 	}

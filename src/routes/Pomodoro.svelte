@@ -22,8 +22,10 @@
 	let timerState = TimerState.STOPPED;
 	// object of Timer to send on finish
 	let currentTimer = new Timer();
-	// time for visual clock
+	// limit for visual clock
 	let pomodoroClock = 0;
+	// time for visual clock
+	export let remainedSeconds;
 
 	$: changeFavicon(timerState);
 
@@ -37,7 +39,7 @@
 
 		currentTimer = new Timer(event.detail.timer, event.detail.name);
 		currentTimer.finish = new Date();
-		dispatch('timer', currentTimer);
+		dispatch('current', currentTimer);
 	}
 
 	function alarming() {
@@ -75,19 +77,17 @@
 				}
 			}
 		});
-
-		setInterval(function () {
-			if (timerState == TimerState.RUNNING) {
-				currentTimer.finish = new Date();
-				dispatch('timer', currentTimer);
-			}
-		}, 5000);
 	});
 </script>
 
 <Controls active={timerState === TimerState.STOPPED} on:start={startTimer} on:stop={stopTimer}>
 	<div class="clock">
-		<Clock time={pomodoroClock} on:alarming={alarming} on:stop={stopTimerFromClock} />
+		<Clock
+			time={pomodoroClock}
+			bind:remainedSeconds
+			on:alarming={alarming}
+			on:stop={stopTimerFromClock}
+		/>
 		<Tooltip title="Volume">
 			<Volume /><br />
 		</Tooltip>

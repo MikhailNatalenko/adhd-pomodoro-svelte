@@ -9,12 +9,16 @@
 
 	let timerLogs: TimerList;
 
+	let currentTimer: number;
+
+	$: timerLogs = timerLogs?.setActiveDur(currentTimer);
+
 	function onTimer(event: TimerEvent) {
 		timerLogs = timerLogs.push(event.detail);
 	}
 
 	function onActiveTimer(event: TimerEvent) {
-		timerLogs = timerLogs.push(event.detail);
+		timerLogs = timerLogs.setActive(event.detail);
 	}
 </script>
 
@@ -22,7 +26,12 @@
 	<div class="container">
 		<div class="pomodoro">
 			<h1 class="logo">Let's Pomodoro!</h1>
-			<Pomodoro debugFlag={debug} on:timer={onTimer} />
+			<Pomodoro
+				debugFlag={debug}
+				on:timer={onTimer}
+				on:current={onActiveTimer}
+				bind:remainedSeconds={currentTimer}
+			/>
 		</div>
 		<div class="logs">
 			<Logpanel bind:timerLogs />

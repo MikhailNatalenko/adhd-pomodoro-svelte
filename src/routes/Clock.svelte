@@ -6,8 +6,9 @@
 	import { PreciseTimer } from '$lib/precise_timer';
 
 	export let time = 0;
+	export var remainedSeconds = 0;
+	
 	var timer: PreciseTimer;
-	var remainedSeconds = 0;
 	const dispatch = createEventDispatcher();
 
 	$: runTimer(time);

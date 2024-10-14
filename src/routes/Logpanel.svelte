@@ -5,15 +5,13 @@
 	import type { Timer } from '$lib/types';
 	import { formatTimeHHMMSS } from '$lib/utils';
 	import { TimerList, parseTimerList } from '$lib/timerlog';
-	import { fade } from 'svelte/transition';
 
 	////// props /////////////
 	export let timerLogs: TimerList = new TimerList([]);
 
-	var collapsed = true;
-	var fill_gaps = true;
 	var normalized: Timer[] = [];
 	let mounted = false;
+	let rawView = false;
 
 	function updateLogs(logs: TimerList) {
 		if (logs == undefined) return;
@@ -28,8 +26,7 @@
 	}
 
 	function changeLineType(start: Date) {
-		timerLogs.changeLineType(start);
-		timerLogs = timerLogs;
+		timerLogs = timerLogs.changeLineType(start); 
 	}
 
 	function deleteLine(start: Date) {
@@ -40,20 +37,17 @@
 	function normalize(timers: TimerList) {
 		if (timers == undefined) return [];
 
-		return timers.normalize(collapsed, fill_gaps);
+		return timers.normalize(!rawView);
 	}
-	$: updateParam(collapsed, 'collapsed');
-	$: updateParam(fill_gaps, 'fill_gaps');
+
+	$: updateParam(rawView, 'raw_view');
 	$: updateLogs(timerLogs);
 	$: normalized = normalize(timerLogs);
-
-	$: rawView = !(collapsed || fill_gaps);
 
 	onMount(() => {
 		let logs = Cookies.get('logs');
 		console.log('cookies for logs contain', logs);
-		collapsed = Cookies.get('collapsed') === 'true';
-		fill_gaps = Cookies.get('fill_gaps') === 'true';
+		rawView = Cookies.get('raw_view') === 'true';
 
 		timerLogs = parseTimerList(logs == undefined ? '' : logs);
 		mounted = true;
@@ -63,26 +57,27 @@
 <div>
 	<button on:click={() => (timerLogs = new TimerList([]))} class="clear">Clear logs</button>
 	<span>Active time: </span><span> {formatTimeHHMMSS(timerLogs.total())}</span>
-	<input type="checkbox" id="collapse" name="collapse" bind:checked={collapsed} />
-	<label for="collapse">Collapse</label>
-	<input type="checkbox" id="fillRests" name="fill rests gaps" bind:checked={fill_gaps} /><label
-		for="fillRests">Fill gaps</label
-	>
-	<button on:click={() => (timerLogs = timerLogs.glueGaps())} class="save">Save gaps</button>
+	<input type="checkbox" id="edit" name="edit" bind:checked={rawView} />
+	<label for="edit">Edit</label>
+
+	<!-- <button on:click={() => (timerLogs = timerLogs.glueGaps())} class="save">Save gaps</button> -->
 </div>
 
 <div class="logs">
-
-	{#if timerLogs.active} 
-	<Logline {...timerLogs.active} rawView={rawView} toplog={true}/><br />
-	<!-- on:change={(event)=>changeLineType(event.detail)}  -->
-	<!-- on:remove={(event)=>deleteLine(event.detail)}/> -->
+	{#if timerLogs.active}
+		<Logline {...timerLogs.active} {rawView} toplog={true} /><br />
+		<!-- on:change={(event)=>changeLineType(event.detail)}  -->
+		<!-- on:remove={(event)=>deleteLine(event.detail)}/> -->
 	{/if}
 
 	{#each [...normalized].reverse() as log (log.start)}
-		<Logline {...log} rawView={rawView} toplog={false}
-		on:change={(event)=>changeLineType(event.detail)} 
-		on:remove={(event)=>deleteLine(event.detail)}/>
+		<Logline
+			{...log}
+			{rawView}
+			toplog={false}
+			on:change={(event) => changeLineType(event.detail)}
+			on:remove={(event) => deleteLine(event.detail)}
+		/>
 		<br />
 	{/each}
 </div>
@@ -98,30 +93,6 @@
 		font-family: 'title_roboto', sans-serif;
 		font-size: 20px;
 		color: #482a2a;
-	}
-	.mini {
-		border: none;
-		color: rgb(220, 220, 220);
-		text-align: center;
-		text-decoration: none;
-		display: inline-block;
-		font-size: 12px;
-		margin: 0px;
-		cursor: pointer;
-		font-family: 'Roboto-Regular';
-		height: 15px;
-		width: 50px;
-		border-radius: 5px;
-		background-color: rgb(19, 88, 108);
-	}
-
-	.cross {
-		width: 15px;
-		background-color: rgb(158, 44, 44);
-	}
-
-	.mini:hover {
-		background-color: rgb(58, 140, 163);
 	}
 	label {
 		font-family: 'title_roboto', sans-serif;
