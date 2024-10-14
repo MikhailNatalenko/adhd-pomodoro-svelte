@@ -60,6 +60,7 @@
 
 	function cancelTimer() {
 		stopTimer(false); //do not send event and save logs
+		dispatch('cancel');
 	}
 
 	function stopTimerFromClock() {

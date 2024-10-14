@@ -138,6 +138,11 @@ export class TimerList {
 		return JSON.stringify(cached);
 	}
 
+	resetActive(): TimerList {
+		this.active = undefined;
+		return this;
+	}
+
 	setActive(active: Timer): TimerList {
 		this.active = active;
 		return this.glueGaps();

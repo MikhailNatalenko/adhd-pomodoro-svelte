@@ -20,6 +20,10 @@
 	function onActiveTimer(event: TimerEvent) {
 		timerLogs = timerLogs.setActive(event.detail);
 	}
+
+	function onCancel() {
+		timerLogs = timerLogs.resetActive();
+	}
 </script>
 
 <main>
@@ -30,6 +34,7 @@
 				debugFlag={debug}
 				on:timer={onTimer}
 				on:current={onActiveTimer}
+				on:cancel={onCancel}
 				bind:remainedSeconds={currentTimer}
 			/>
 		</div>
