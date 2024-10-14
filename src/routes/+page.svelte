@@ -10,6 +10,7 @@
 	let timerLogs: TimerList;
 
 	let currentTimer: number;
+	let darkMode = false;
 
 	$: timerLogs = timerLogs?.setActiveDur(currentTimer);
 
@@ -26,7 +27,7 @@
 	}
 </script>
 
-<main>
+<main class:dark={darkMode}>
 	<div class="container">
 		<div class="pomodoro">
 			<h1 class="logo">Let's Pomodoro!</h1>
@@ -44,15 +45,52 @@
 	</div>
 </main>
 <div class="debug-div">
-	<label id="debug"> Debug:<input type="checkbox" bind:checked={debug} /> </label>
+	<label id="debug">
+		Debug:<input type="checkbox" bind:checked={debug} />
+		<button on:click={() => (darkMode = !darkMode)}> Toggle Dark Mode </button></label
+	>
 </div>
 
 <style>
 	@import './../styles/fonts.css';
 
+	:root {
+		--background-color: rgb(250, 235, 235);
+		--logs-background-color: #f0f0ed;
+		--logs-border-color: #f0f0ed;
+		--text-color: #482a2a;
+		--work-buttons: #040d12;
+		--buttons-text-color: #e0e0e0;
+		--rest-buttons: #183d3d;
+		--rest-light1: #5c8374;
+		--delete-background-color: rgba(114, 42, 42, 0.726);
+		--disabled-bg-color: #bfb6b4;
+		--disabled-color: darkslategrey;
+		--choosen-bg-color: burlywood;
+		--hover-bg-color: #554242;
+	}
+
+	.dark {
+		--background-color: #040d12;
+		--logs-background-color: #06141c;
+		--logs-border-color: #f0f0ed;
+		--text-color: #c2bcbc;
+		--work-buttons: #183d3d;
+		--buttons-text-color: #e0e0e0;
+		--rest-buttons: #183d3d;
+		--rest-light1: #5c8374;
+		--delete-background-color: rgba(103, 39, 39, 0.726);
+		--disabled-bg-color: #363333;
+		--disabled-color: rgb(24, 24, 24);
+		--choosen-bg-color: #d99bc8;
+		--hover-bg-color: #554242;
+	}
+
 	main {
 		display: flex;
 		justify-content: center;
+		background-color: var(--background-color);
+		color: var(--text-color);
 	}
 
 	.container {
@@ -76,7 +114,7 @@
 		font-family: 'title_roboto', sans-serif;
 		font-size: 45px;
 		text-align: center;
-		color: #482a2a;
+		color: var(--text-color);
 		margin: 0px;
 	}
 

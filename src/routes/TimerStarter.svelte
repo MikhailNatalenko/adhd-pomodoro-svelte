@@ -41,24 +41,25 @@
 <style>
 	@import './../styles/button.css';
 	.active {
-		background-color: rgb(31, 30, 30);
+		background-color: var(--work-buttons);
 	}
 
 	.rest {
-		background-color: #467057;
+		/* background-color: #467057; */
+		background-color: var(--rest-buttons);
 	}
 
 	@keyframes example {
 		from {
-			background-color: #554242;
+			background-color: var(--hover-button-bg-color);
 		}
 		to {
-			background-color: burlywood;
+			background-color: var(--choosen-bg-color);
 		}
 	}
 
 	button:disabled.pressed {
-		background-color: burlywood;
+		background-color: var(--choosen-bg-color);
 		animation-name: example;
 		animation-duration: 0.4s;
 	}

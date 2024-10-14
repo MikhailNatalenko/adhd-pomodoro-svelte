@@ -113,7 +113,7 @@
 	}
 
 	#stopper {
-		background-color: rgba(103, 39, 39, 0.726);
+		background-color: var(--delete-background-color);
 		height: 30px;
 		width: 100px;
 		margin-top: -10px;

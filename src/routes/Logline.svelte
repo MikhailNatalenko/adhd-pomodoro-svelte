@@ -78,7 +78,7 @@
 	}
 
 	.rest {
-		color: #83b37f;
+		color: var(--rest-light1);
 	}
 
 	/* .rest.{
@@ -90,7 +90,7 @@
 			color: black;
 		}
 		to {
-			color: #83b37f;
+			color: #183d3d;
 		}
 	}
 

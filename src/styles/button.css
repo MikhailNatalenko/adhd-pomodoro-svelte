@@ -18,13 +18,13 @@ button {
 }
 
 button:disabled {
-	background-color: #cec8c8;
-	color: darkslategrey;
+	background-color: var(--disabled-bg-color);
+	color: var(--disabled-color);
 }
 
 button:disabled:hover {
 	background-color: #cec8c8;
-	color: darkslategrey;
+	color: var(--disabled-color);
 }
 button:hover {
 	background-color: #554242;

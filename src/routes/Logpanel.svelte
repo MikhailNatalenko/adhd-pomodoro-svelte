@@ -87,22 +87,23 @@
 	@import './../styles/fonts.css';
 	.clear {
 		margin: 10px;
-		background-color: rgb(88, 18, 39);
+		/* background-color: rgb(88, 18, 39); */
+		background-color: var(--delete-background-color);
 	}
 	span {
 		font-family: 'title_roboto', sans-serif;
 		font-size: 20px;
-		color: #482a2a;
+		/* color: #482a2a; */
 	}
 	label {
 		font-family: 'title_roboto', sans-serif;
 		font-size: 14px;
-		color: #775252;
+		/* color: #775252; */
 	}
 	.logs {
 		overflow-y: auto;
-		background-color: #f4f8f6; /* Background color */
-		border: 1px solid #f9f9f9; /* Border */
+		background-color: var(--logs-background-color); /* Background color */
+		border: 1px solid var(--logs-background-color); /* Border */
 		padding: 10px; /* Padding */
 		border-radius: 8px;
 	}

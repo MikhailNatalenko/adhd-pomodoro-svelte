@@ -53,6 +53,9 @@
 		cursor: pointer;
 	}
 
+	#watch {
+		color: var(--text-color);
+	}
 	#watch:hover {
 		color: dimgrey;
 	}
