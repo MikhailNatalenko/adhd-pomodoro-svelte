@@ -165,14 +165,14 @@ export class TimerList {
 		return this;
 	}
 
-	changeLineType(start: Date) : TimerList {
+	changeLineType(start: Date): TimerList {
 		this.list.forEach((timer) => {
 			if (timer.start === start) {
 				timer.name = timer.name === this.rest_name ? this.work_name : this.rest_name;
 			}
 		});
 
-		return this
+		return this;
 	}
 
 	remove(start: Date) {

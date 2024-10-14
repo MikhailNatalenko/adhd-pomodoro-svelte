@@ -7,7 +7,7 @@
 
 	export let time = 0;
 	export var remainedSeconds = 0;
-	
+
 	var timer: PreciseTimer;
 	const dispatch = createEventDispatcher();
 

@@ -26,7 +26,7 @@
 	}
 
 	function changeLineType(start: Date) {
-		timerLogs = timerLogs.changeLineType(start); 
+		timerLogs = timerLogs.changeLineType(start);
 	}
 
 	function deleteLine(start: Date) {

@@ -31,7 +31,7 @@
 	}
 </script>
 
-<snap class:toplog class="logline" class:rest> 
+<snap class:toplog class="logline" class:rest>
 	<snap class="time work">{startClock}</snap>
 	<snap>
 		{#if rest}
