@@ -1,11 +1,12 @@
 import type { CachedLog } from '$lib/types';
 import { Timer } from '$lib/types';
 
-function farTimers(t1: Timer, t2: Timer, gap: number): boolean {
+let default_gap = 60;
+function farTimers(t1: Timer, t2: Timer, gap: number = default_gap): boolean {
 	return (t2.start.getTime() - t1.finish.getTime()) / 1000 > gap;
 }
 
-export function collapseTimers(timers: Timer[], gap: number = 60) {
+export function collapseTimers(timers: Timer[], gap: number = default_gap) {
 	var output: Timer[] = [];
 	var cur = 0;
 
@@ -204,6 +205,13 @@ export class TimerList {
 
 	glueGaps(): TimerList {
 		this.list = fillGaps(this.list, this.rest_name);
+
+		if (this.active && this.list.length > 0) {
+			let lastTimer = this.list[this.list.length - 1];
+			if (farTimers(lastTimer, this.active)) {
+				this.list.push(new Timer(0, this.rest_name, lastTimer.finish, this.active.start));
+			}
+		}
 		return this;
 	}
 }
