@@ -1,16 +1,19 @@
 <script lang="ts">
 	import Pomodoro from './Pomodoro.svelte';
 	import Logpanel from './Logpanel.svelte';
+	import Cookies from 'js-cookie';
 
 	import type { TimerEvent } from '$lib/types';
 	import { TimerList } from '$lib/timerlog';
+	import { onMount } from 'svelte';
 
 	let debug: boolean = false;
 
 	let timerLogs: TimerList;
 
 	let currentTimer: number;
-	let darkMode = false;
+	let darkMode: boolean;
+	let loading = true;
 
 	$: timerLogs = timerLogs?.setActiveDur(currentTimer);
 
@@ -25,29 +28,46 @@
 	function onCancel() {
 		timerLogs = timerLogs.resetActive();
 	}
+
+	onMount(() => {
+		darkMode = Cookies.get('darkmode') === 'true';
+		console.log('get darkmode:', darkMode);
+		loading = false;
+	});
+
+	function toggleDark() {
+		// if (!mounted) return;
+		darkMode = !darkMode;
+		console.log('toggle dark', darkMode);
+		Cookies.set('darkmode', darkMode ? 'true' : 'false', { expires: 31 });
+	}
 </script>
 
-<main class:dark={darkMode}>
-	<div class="container">
-		<div class="pomodoro">
-			<h1 class="logo">Let's Pomodoro!</h1>
-			<Pomodoro
-				debugFlag={debug}
-				on:timer={onTimer}
-				on:current={onActiveTimer}
-				on:cancel={onCancel}
-				bind:remainedSeconds={currentTimer}
-			/>
+{#if loading}
+	<main style="background-color:gray; height:100vh"></main>
+{:else}
+	<main class:dark={darkMode}>
+		<div class="container">
+			<div class="pomodoro">
+				<h1 class="logo">Let's Pomodoro!</h1>
+				<Pomodoro
+					debugFlag={debug}
+					on:timer={onTimer}
+					on:current={onActiveTimer}
+					on:cancel={onCancel}
+					bind:remainedSeconds={currentTimer}
+				/>
+			</div>
+			<div class="logs">
+				<Logpanel bind:timerLogs />
+			</div>
 		</div>
-		<div class="logs">
-			<Logpanel bind:timerLogs />
-		</div>
-	</div>
-</main>
+	</main>
+{/if}
 <div class="debug-div">
 	<label id="debug">
 		Debug:<input type="checkbox" bind:checked={debug} />
-		<button on:click={() => (darkMode = !darkMode)}> Toggle Dark Mode </button></label
+		<button on:click={toggleDark}> Toggle Dark Mode </button></label
 	>
 </div>
 
@@ -91,6 +111,7 @@
 		justify-content: center;
 		background-color: var(--background-color);
 		color: var(--text-color);
+		padding: 8px;
 	}
 
 	.container {
