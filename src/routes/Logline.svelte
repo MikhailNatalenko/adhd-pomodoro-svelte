@@ -1,11 +1,16 @@
 <script lang="ts">
 	import { formatTimeLogline } from '$lib/utils';
 	import { fade } from 'svelte/transition';
+	import { createEventDispatcher } from 'svelte';
+
+	const dispatch = createEventDispatcher();
 
 	export let start: Date;
 	export let finish: Date;
 	export let name: string;
-	export let toplog: boolean;
+	export let rawView : boolean;
+	export let toplog: boolean = false;
+
 	function formatTs(time: Date) {
 		let minutes = time.getHours().toString().padStart(2, '0');
 		let seconds = time.getMinutes().toString().padStart(2, '0');
@@ -16,6 +21,14 @@
 
 	let startClock = formatTs(start);
 	$: rest = name === 'rest';
+
+	function changeType(start: Date) {
+		dispatch('change', start)
+	}
+
+	function deleteItem(start: Date) {
+		dispatch('remove', start)
+	}
 </script>
 
 <snap transition:fade={{ duration: 450 }} class:toplog class="logline" class:rest>
@@ -28,14 +41,31 @@
 		{/if}
 	</snap>
 	<snap class="duration">{formatTimeLogline(duration)}</snap>
+	{#if rawView}
+	<button
+		transition:fade={{ duration: 100 }}
+		class="mini"
+		hidden={rawView}
+		on:click={() => changeType(start)}>ch</button
+	>
+	<button
+		transition:fade={{ duration: 100 }}
+		class="mini cross"
+		hidden={rawView}
+		on:click={() => deleteItem(start)}>x</button
+	>
+{/if}
+
+
 </snap>
+
 
 <style>
 	@import './../styles/fonts.css';
 
 	.logline {
 		font-family: 'title_hero_regular';
-		font-size: 1em;
+		font-size: 1.2em;
 		margin: 0.5em;
 	}
 	.time {
@@ -54,7 +84,11 @@
 		color: #83b37f;
 	}
 
-	/*
+	/* .rest.{
+		font-weight: bold;
+	} */
+
+	
 	@keyframes greenOne {
 		from {color: black;}
 		to {color: #83b37f;}
@@ -72,5 +106,5 @@
 	.toplog {
 		animation: blackOne;
 		animation-duration: 1s;
-	}*/
+	}
 </style>

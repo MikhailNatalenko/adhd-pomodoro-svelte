@@ -2,13 +2,13 @@
 	import Logline from './Logline.svelte';
 	import Cookies from 'js-cookie';
 	import { onMount } from 'svelte';
-	import type { Timer, CachedLog } from '$lib/types';
+	import type { Timer } from '$lib/types';
 	import { formatTimeHHMMSS } from '$lib/utils';
-	import { TimerList } from '$lib/timerlog';
+	import { TimerList, parseTimerList } from '$lib/timerlog';
 	import { fade } from 'svelte/transition';
 
 	////// props /////////////
-	export let timerLogs: TimerList = new TimerList('');
+	export let timerLogs: TimerList = new TimerList([]);
 
 	var collapsed = true;
 	var fill_gaps = true;
@@ -55,41 +55,34 @@
 		collapsed = Cookies.get('collapsed') === 'true';
 		fill_gaps = Cookies.get('fill_gaps') === 'true';
 
-		timerLogs = new TimerList(logs == undefined ? '' : logs);
+		timerLogs = parseTimerList(logs == undefined ? '' : logs);
 		mounted = true;
 	});
 </script>
 
 <div>
-	<button on:click={() => (timerLogs = new TimerList(''))} class="clear">Clear logs</button>
+	<button on:click={() => (timerLogs = new TimerList([]))} class="clear">Clear logs</button>
 	<span>Active time: </span><span> {formatTimeHHMMSS(timerLogs.total())}</span>
 	<input type="checkbox" id="collapse" name="collapse" bind:checked={collapsed} />
 	<label for="collapse">Collapse</label>
 	<input type="checkbox" id="fillRests" name="fill rests gaps" bind:checked={fill_gaps} /><label
 		for="fillRests">Fill gaps</label
 	>
-	{#if fill_gaps}
-		<button on:click={() => (timerLogs = timerLogs.glueGaps())} class="save">Save gaps</button>
-	{/if}
+	<button on:click={() => (timerLogs = timerLogs.glueGaps())} class="save">Save gaps</button>
 </div>
 
 <div class="logs">
+
+	{#if timerLogs.active} 
+	<Logline {...timerLogs.active} rawView={rawView} toplog={true}/><br />
+	<!-- on:change={(event)=>changeLineType(event.detail)}  -->
+	<!-- on:remove={(event)=>deleteLine(event.detail)}/> -->
+	{/if}
+
 	{#each [...normalized].reverse() as log (log.start)}
-		<Logline {...log} />
-		{#if rawView}
-			<button
-				transition:fade={{ duration: 100 }}
-				class="mini"
-				hidden={rawView}
-				on:click={() => changeLineType(log.start)}>ch</button
-			>
-			<button
-				transition:fade={{ duration: 100 }}
-				class="mini cross"
-				hidden={rawView}
-				on:click={() => deleteLine(log.start)}>x</button
-			>
-		{/if}
+		<Logline {...log} rawView={rawView} toplog={false}
+		on:change={(event)=>changeLineType(event.detail)} 
+		on:remove={(event)=>deleteLine(event.detail)}/>
 		<br />
 	{/each}
 </div>

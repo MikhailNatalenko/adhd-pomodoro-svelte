@@ -3,14 +3,16 @@ export class Timer {
 	finish: Date;
 	name: string;
 	value: number;
-	toplog: boolean = false;
 
-	constructor(value = 0, name = '') {
-		this.start = new Date();
-		this.finish = new Date();
+	constructor(value = 0, name = '', start = new Date(), finish = new Date()) {
+		this.start = start;
+		this.finish = finish;
 		this.name = name;
 		this.value = value;
-		this.toplog = false;
+	}
+
+	durationS() {
+		return (this.finish.getTime() - this.start.getTime()) / 1000;
 	}
 }
 

@@ -2,7 +2,7 @@
 	import Pomodoro from './Pomodoro.svelte';
 	import Logpanel from './Logpanel.svelte';
 
-	import type { Timer, TimerEvent } from '$lib/types';
+	import type { TimerEvent } from '$lib/types';
 	import { TimerList } from '$lib/timerlog';
 
 	let debug: boolean = false;
@@ -10,6 +10,10 @@
 	let timerLogs: TimerList;
 
 	function onTimer(event: TimerEvent) {
+		timerLogs = timerLogs.push(event.detail);
+	}
+
+	function onActiveTimer(event: TimerEvent) {
 		timerLogs = timerLogs.push(event.detail);
 	}
 </script>

@@ -69,37 +69,46 @@ function validateCachedLogs(arr: any): arr is CachedLog[] {
 	return true;
 }
 
+export function parseTimerList(str: string) : TimerList {
+	let list: Timer[] = []
+	try {
+		const parsed = JSON.parse(str);
+
+		let cached: Timer[] = [];
+		if (validateCachedLogs(parsed)) {
+			// do something with now correctly typed object
+		parsed.forEach((element) => {
+			cached.push(
+				new Timer(
+					0,
+					element.name,
+					new Date(element.start * 1000),
+					new Date(element.finish * 1000)
+					)
+				);
+			});
+		}
+		console.log('deserialized logs:', cached);
+		list = cached;
+	} catch (error) {
+		list = [];
+	}
+	return new TimerList(list)
+}
 export class TimerList {
-	list: Timer[] = [];
+	public list: Timer[] = [];
+	public active?: Timer;
+
 	rest_name: string = 'rest';
 	work_name: string = 'work';
 
-	constructor(str: string) {
-		try {
-			const parsed = JSON.parse(str);
-
-			let cached: Timer[] = [];
-			if (validateCachedLogs(parsed)) {
-				// do something with now correctly typed object
-				parsed.forEach((element) => {
-					cached.push({
-						value: 0,
-						name: element.name,
-						finish: new Date(element.finish * 1000),
-						start: new Date(element.start * 1000)
-					});
-				});
-			}
-			console.log('deserialized logs:', cached);
-			this.list = cached;
-		} catch (error) {
-			this.list = [];
-		}
+	constructor(list: Timer[], active?: Timer) {
+		this.list = fillGaps(list, this.rest_name);;
+		this.active = active;
 	}
 
 	normalize(collapse: boolean, fill: boolean) {
-		var timers = this.list;
-		if (fill) timers = fillGaps(timers, 'rest');
+		var timers = fillGaps(this.list, 'rest');
 		if (collapse) timers = collapseTimers(timers);
 
 		return timers;
@@ -119,20 +128,22 @@ export class TimerList {
 		return JSON.stringify(cached);
 	}
 
+	setActive(timer: Timer): TimerList {
+		this.active = timer;
+		return this;
+	}
+
 	push(timer: Timer): TimerList {
-		this.list.forEach((timer) => {
-			timer.toplog = false;
-		});
+		this.active = undefined;
+
 		if (this.list.length > 0) {
 			//TODO: dirty hack. Propably I should fix it later
 			if (this.list[this.list.length - 1].start == timer.start) {
 				this.list[this.list.length - 1].finish = timer.finish;
 				this.list = this.list;
-				timer.toplog = true;
 				return this;
 			}
 		}
-		timer.toplog = true;
 		this.list.push(timer);
 		return this;
 	}
@@ -160,14 +171,20 @@ export class TimerList {
 		let duration = 0;
 		this.list.forEach((element) => {
 			if (element.name == this.work_name) {
-				duration += (element.finish.getTime() - element.start.getTime()) / 1000;
+				duration += element.durationS();
 			}
 		});
+
+		if (this.active) {
+			if (this.active.name == this.work_name) {
+				duration += this.active.durationS();
+			}
+		}
 		return duration;
 	}
 
-	glueGaps(): TimerList {
-		this.list = fillGaps(this.list, this.rest_name);
-		return this;
-	}
+	// glueGaps(): TimerList {
+	// 	this.list = fillGaps(this.list, this.rest_name);
+	// 	return this;
+	// }
 }

@@ -1,4 +1,4 @@
-import { collapseTimers, fillGaps } from './timerlog';
+import { collapseTimers, fillGaps, TimerList } from './timerlog';
 import { describe, it, expect } from 'vitest';
 import { Timer } from '$lib/types';
 
@@ -165,5 +165,68 @@ describe('fill gaps', () => {
 
 		let output = fillGaps(input);
 		expect(output).toStrictEqual([timer1, timer2work, gapTimer, timer3workGapped]);
+	});
+});
+
+
+describe('check durationS', () => {
+	var timer1 = new Timer();
+
+	timer1.start = new Date(Date.parse('01 Jan 1970 00:00:00 GMT'));
+	timer1.finish = new Date(Date.parse('01 Jan 1970 00:00:10 GMT'));
+	timer1.name = 'work';
+
+	var timer2work = new Timer();
+	timer2work.start = new Date(Date.parse('01 Jan 1970 00:20:00 GMT'));
+	timer2work.finish = new Date(Date.parse('01 Jan 1970 00:21:00 GMT'));
+	timer2work.name = timer1.name;
+
+	var timer2rest = new Timer();
+	timer2rest.start = new Date(Date.parse('01 Jan 1970 00:20:00 GMT'));
+	timer2rest.finish = new Date(Date.parse('01 Jan 1970 00:21:00 GMT'));
+	timer2rest.name = "rest";
+
+	var timer3work = new Timer();
+	timer3work.start = new Date(Date.parse('01 Jan 1970 00:40:00 GMT'));
+	timer3work.finish = new Date(Date.parse('01 Jan 1970 00:40:10 GMT'));
+	timer3work.name = 'work';
+
+	var timer3rest = new Timer();
+	timer3rest.start = new Date(Date.parse('01 Jan 1970 00:40:00 GMT'));
+	timer3rest.finish = new Date(Date.parse('01 Jan 1970 00:40:10 GMT'));
+	timer3rest.name = 'rest';
+
+
+	// it ()
+	it('w + w + w', () => {
+		let list = new TimerList([timer1, timer2work, timer3work])
+
+		
+		let output = list.total();
+		expect(output).toEqual(80);
+	});
+
+	it('w + w + aw', () => {
+		let list = new TimerList([timer1, timer2work], timer3work)
+
+		
+		let output = list.total();
+		expect(output).toEqual(80);
+	});
+
+	it('w + r + aw', () => {
+		let list = new TimerList([timer1, timer2rest], timer3work)
+
+		
+		let output = list.total();
+		expect(output).toEqual(20);
+	});
+
+	it('w + r + ar', () => {
+		let list = new TimerList([timer1, timer2rest], timer3rest)
+
+		
+		let output = list.total();
+		expect(output).toEqual(10);
 	});
 });
