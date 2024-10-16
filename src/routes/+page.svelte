@@ -18,7 +18,7 @@
 	$: timerLogs = timerLogs?.setActiveDur(currentTimer);
 
 	function onTimer(event: TimerEvent) {
-		timerLogs = timerLogs.push(event.detail);
+		timerLogs = timerLogs.addTimer(event.detail);
 	}
 
 	function onActiveTimer(event: TimerEvent) {
@@ -36,7 +36,6 @@
 	});
 
 	function toggleDark() {
-		// if (!mounted) return;
 		darkMode = !darkMode;
 		console.log('toggle dark', darkMode);
 		Cookies.set('darkmode', darkMode ? 'true' : 'false', { expires: 31 });
@@ -44,7 +43,7 @@
 </script>
 
 {#if loading}
-	<main style="background-color:gray; height:100vh"></main>
+	<main style="background-color:gray; height:90 	vh"></main>
 {:else}
 	<main class:dark={darkMode}>
 		<div class="container">
@@ -75,9 +74,9 @@
 	@import './../styles/fonts.css';
 
 	:root {
-		--background-color: rgb(250, 235, 235);
+		--background-color: rgb(245, 239, 236);
 		--logs-background-color: #f0f0ed;
-		--logs-border-color: #f0f0ed;
+		--logs-border-color: #b6b6ae;
 		--text-color: #482a2a;
 		--work-buttons: #040d12;
 		--buttons-text-color: #e0e0e0;
@@ -88,12 +87,14 @@
 		--disabled-color: darkslategrey;
 		--choosen-bg-color: burlywood;
 		--hover-bg-color: #554242;
+		--slider-color: #d3d3d3;
+		--logline-time-color: #c0c0c0;
 	}
 
 	.dark {
 		--background-color: #040d12;
 		--logs-background-color: #06141c;
-		--logs-border-color: #f0f0ed;
+		--logs-border-color: #4d4d4c;
 		--text-color: #c2bcbc;
 		--work-buttons: #183d3d;
 		--buttons-text-color: #e0e0e0;
@@ -104,6 +105,8 @@
 		--disabled-color: rgb(24, 24, 24);
 		--choosen-bg-color: #d99bc8;
 		--hover-bg-color: #554242;
+		--slider-color: #4d4d4c;
+		--logline-time-color: #4d4d4c;
 	}
 
 	main {
@@ -111,7 +114,6 @@
 		justify-content: center;
 		background-color: var(--background-color);
 		color: var(--text-color);
-		padding: 8px;
 	}
 
 	.container {

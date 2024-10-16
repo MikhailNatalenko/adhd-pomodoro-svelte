@@ -156,7 +156,7 @@ export class TimerList {
 		return this;
 	}
 
-	push(timer: Timer): TimerList {
+	addTimer(timer: Timer): TimerList {
 		this.active = undefined;
 
 		if (this.list.length > 0) {

@@ -78,7 +78,7 @@
 		width: 120px;
 		height: 8px;
 		border-radius: 4px;
-		background: #d3d3d3;
+		background: var(--slider-color);
 		outline: none;
 		opacity: 0.7;
 		-webkit-transition: 0.2s;

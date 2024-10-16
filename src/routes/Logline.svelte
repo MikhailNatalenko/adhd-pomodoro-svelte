@@ -68,7 +68,10 @@
 	.time {
 		font-family: 'title_hero_bold';
 		font-size: 1em;
-		color: #c0c0c0;
+		color: var(--logline-time-color);
+		display: inline-block;
+		text-align: left;
+		width: 45px;
 		/* margin: 0.5em; */
 	}
 	.duration {

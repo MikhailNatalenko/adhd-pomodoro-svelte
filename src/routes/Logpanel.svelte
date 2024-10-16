@@ -102,8 +102,8 @@
 	}
 	.logs {
 		overflow-y: auto;
-		background-color: var(--logs-background-color); /* Background color */
-		border: 1px solid var(--logs-background-color); /* Border */
+		background-color: var(--logs-background-color);
+		border: 1px solid var(--logs-border-color);
 		padding: 10px; /* Padding */
 		border-radius: 8px;
 	}
