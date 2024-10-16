@@ -36,3 +36,8 @@ export const TimerState = {
 } as const;
 
 export type TimerStateType = (typeof TimerState)[keyof typeof TimerState];
+
+export enum EmitTimer {
+	EMIT = 1,
+	DO_NOT_EMIT
+}

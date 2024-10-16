@@ -10,7 +10,7 @@
 	import { onMount } from 'svelte';
 	import { playAlertSound } from './audio/Ringer.svelte';
 	import { createEventDispatcher } from 'svelte';
-	import { TimerState, Timer } from '$lib/types';
+	import { TimerState, Timer, EmitTimer } from '$lib/types';
 	import { changeFavicon } from './Favicon.svelte';
 	import { getParam } from '$lib/constants';
 
@@ -29,44 +29,43 @@
 
 	$: changeFavicon(timerState);
 
-	function setPomodoroClock(num) {
+	function startTimer(num) {
 		pomodoroClock = num * getParam(debugFlag).timersMultiplier;
 	}
 
-	function startTimer(event: Any) {
+	function onStartTimer(event: Any) {
 		timerState = TimerState.RUNNING;
-		setPomodoroClock(event.detail.timer);
+		startTimer(event.detail.timer);
 
 		currentTimer = new Timer(event.detail.timer, event.detail.name);
-		currentTimer.finish = new Date();
 		dispatch('current', currentTimer);
 	}
 
-	function alarming() {
+	function onAlarm() {
 		if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
-			stopTimer(true); // Change timer state to STOPPED if page is visible
+			onStopTimer(EmitTimer.EMIT); // Change timer state to STOPPED if page is visible
 			return;
 		}
 		timerState = TimerState.WAITING_FOR_STOP;
 	}
 
-	function stopTimer(emit: boolean = true) {
+	function onStopTimer(emit: EmitTimer = EmitTimer.EMIT) {
 		timerState = TimerState.STOPPED;
 		currentTimer.finish = new Date();
 		pomodoroClock = 0; // reset the clock
 
-		if (emit) dispatch('timer', currentTimer);
+		if (emit === EmitTimer.EMIT) dispatch('timer', currentTimer);
 	}
 
 	function cancelTimer() {
-		stopTimer(false); //do not send event and save logs
+		onStopTimer(EmitTimer.DO_NOT_EMIT); //do not send event and save logs
 		dispatch('cancel');
 	}
 
-	function stopTimerFromClock() {
+	function onStopFromClock() {
 		if (timerState === TimerState.STOPPED) return;
 
-		stopTimer(true);
+		onStopTimer(EmitTimer.EMIT);
 	}
 
 	onMount(() => {
@@ -74,20 +73,24 @@
 			if (timerState === TimerState.WAITING_FOR_STOP) {
 				if (document.visibilityState === 'visible') {
 					console.log('visibility change to visible');
-					stopTimer(true);
+					onStopTimer(EmitTimer.EMIT);
 				}
 			}
 		});
 	});
 </script>
 
-<Controls active={timerState === TimerState.STOPPED} on:start={startTimer} on:stop={stopTimer}>
+<Controls
+	active={timerState === TimerState.STOPPED}
+	on:start={onStartTimer}
+	on:stop={onStopTimer(EmitTimer.DO_NOT_EMIT)}
+>
 	<div class="clock">
 		<Clock
 			time={pomodoroClock}
 			bind:remainedSeconds
-			on:alarming={alarming}
-			on:stop={stopTimerFromClock}
+			on:alarming={onAlarm}
+			on:stop={onStopFromClock}
 		/>
 		<Tooltip title="Volume">
 			<Volume /><br />
@@ -102,7 +105,11 @@
 	</div>
 </Controls>
 
-<Annoyer active={timerState === TimerState.WAITING_FOR_STOP} {debugFlag} on:off={stopTimer} />
+<Annoyer
+	active={timerState === TimerState.WAITING_FOR_STOP}
+	{debugFlag}
+	on:off={onStopTimer(EmitTimer.DO_NOT_EMIT)}
+/>
 
 <style>
 	@import './../styles/button.css';
