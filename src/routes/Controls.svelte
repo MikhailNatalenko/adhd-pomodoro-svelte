@@ -4,6 +4,8 @@
 
 	const dispatch = createEventDispatcher();
 
+	let childComponents: TimerStarter[] = [];
+
 	let timers = [5, 10, 15, 20, 25, 120];
 
 	// @ts-ignore
@@ -13,22 +15,38 @@
 	}
 
 	export let active = true;
+
+	export function clear() {
+		childComponents.forEach((element) => {
+			if (element) element.reset();
+		});
+	}
 </script>
 
 <div>
 	<div class="grid-container">
 		<div class="item">
 			<span class="label">Active</span><br />
-			{#each timers as timer (timer)}
-				<TimerStarter value={timer} name={'work'} on:start={handleTimerStart} disabled={!active} />
+			{#each timers as timer, i}
+				<TimerStarter
+					value={timer}
+					name={'work'}
+					on:start={handleTimerStart}
+					bind:this={childComponents[i]}
+				/>
 				<br />
 			{/each}
 		</div>
 		<slot class="item"></slot>
 		<div class="item">
 			<span class="label">Rest</span><br />
-			{#each timers as timer (timer)}
-				<TimerStarter value={timer} name={'rest'} on:start={handleTimerStart} disabled={!active} />
+			{#each timers as timer, i}
+				<TimerStarter
+					value={timer}
+					name={'rest'}
+					on:start={handleTimerStart}
+					bind:this={childComponents[i + childComponents.length]}
+				/>
 				<br />
 			{/each}
 		</div>

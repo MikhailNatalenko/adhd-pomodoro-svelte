@@ -27,6 +27,8 @@
 	// time for visual clock
 	export let remainedSeconds;
 
+	let controlsComponent;
+
 	$: changeFavicon(timerState);
 
 	function startTimer(num) {
@@ -34,6 +36,9 @@
 	}
 
 	function onStartTimer(event: Any) {
+		if (timerState === TimerState.RUNNING) {
+			onStopTimer(EmitTimer.EMIT);
+		}
 		timerState = TimerState.RUNNING;
 		startTimer(event.detail.timer);
 
@@ -51,6 +56,7 @@
 
 	function onStopTimer(emit: EmitTimer = EmitTimer.EMIT) {
 		timerState = TimerState.STOPPED;
+		if (controlsComponent) controlsComponent.clear();
 		currentTimer.finish = new Date();
 		pomodoroClock = 0; // reset the clock
 
@@ -81,6 +87,7 @@
 </script>
 
 <Controls
+	bind:this={controlsComponent}
 	active={timerState === TimerState.STOPPED}
 	on:start={onStartTimer}
 	on:stop={onStopTimer(EmitTimer.DO_NOT_EMIT)}

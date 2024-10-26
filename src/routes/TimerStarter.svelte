@@ -5,7 +5,6 @@
 
 	export let value: number;
 	export let name: string;
-	export let disabled = false;
 	export let pressed = false;
 
 	function startWork(name: string, value: number) {
@@ -16,13 +15,9 @@
 		pressed = true;
 	}
 
-	function checkDisabled(val: boolean) {
-		if (!val) {
-			pressed = false;
-		}
+	export function reset() {
+		pressed = false;
 	}
-
-	$: checkDisabled(disabled);
 </script>
 
 <button
@@ -30,8 +25,7 @@
 	on:click={function () {
 		startWork(name, value);
 	}}
-	class:pressed
-	{disabled}>{value} min</button
+	class:pressed>{value} min</button
 >
 
 <!-- <button on:click={function(){startWork("work")}} >Работа</button>
@@ -58,7 +52,7 @@
 		}
 	}
 
-	button:disabled.pressed {
+	.pressed {
 		background-color: var(--choosen-bg-color);
 		animation-name: example;
 		animation-duration: 0.4s;
