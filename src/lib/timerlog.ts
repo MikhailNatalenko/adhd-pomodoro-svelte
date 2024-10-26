@@ -1,65 +1,70 @@
 import type { CachedLog } from '$lib/types';
 import { Timer } from '$lib/types';
 
-let default_gap = 60;
-function farTimers(t1: Timer, t2: Timer, gap: number = default_gap): boolean {
+let DEFAULT_COLLAPSE_GAP_S = 60;
+let DEFAULT_LONG_GAP_S = 5 * 60;
+
+function hasLongGap(t1: Timer, t2: Timer, gap: number = DEFAULT_COLLAPSE_GAP_S): boolean {
 	return (t2.start.getTime() - t1.finish.getTime()) / 1000 > gap;
 }
 
-export function collapseTimers(timers: Timer[], gap: number = default_gap) {
-	var output: Timer[] = [];
+export function collapseTimers(timers: Timer[], gap: number = DEFAULT_COLLAPSE_GAP_S) {
+	var collapsedList: Timer[] = [];
 	var cur = 0;
 
 	if (timers.length <= 1) return timers;
 
 	// var lastTimer = timers[0]
-	output.push(timers[0]);
+	collapsedList.push(timers[0]);
 	cur = 0;
 	for (let i = 1; i < timers.length; i++) {
 		const element = timers[i];
 
-		if (output[cur].name == element.name) {
-			if (farTimers(output[cur], element, gap)) {
-				output.push(element);
-				cur++;
-			} else {
-				output[cur].finish = element.finish;
-			}
-		} else {
-			output.push(element);
+		if (collapsedList[cur].name != element.name) {
+			collapsedList.push(element);
 			cur++;
+			continue;
+		}
+
+		if (hasLongGap(collapsedList[cur], element, gap)) {
+			collapsedList.push(element);
+			cur++;
+		} else {
+			// move finish line
+			collapsedList[cur].finish = element.finish;
 		}
 	}
 
-	return output;
+	return collapsedList;
 }
 
-export function fillGaps(timers: Timer[], name = 'rest', gapMin: number = 60 * 5) {
-	var output: Timer[] = [];
-	var cur = 0;
+export function fillEmptyGaps(
+	timers: Timer[],
+	name = 'rest',
+	gapSizeS: number = DEFAULT_LONG_GAP_S
+) {
+	var outputList: Timer[] = [];
+	var cursor = 0;
 
 	if (timers.length <= 1) return timers;
 
 	// var lastTimer = timers[0]
-	output.push(timers[0]);
-	cur = 0;
+	outputList.push(timers[0]);
+	cursor = 0;
 	for (let i = 1; i < timers.length; i++) {
 		const element = timers[i];
-		if (farTimers(output[cur], element, gapMin)) {
-			var gapTimer = new Timer();
-			gapTimer.start = output[cur].finish;
-			gapTimer.finish = element.start;
-			gapTimer.name = name;
+		if (hasLongGap(outputList[cursor], element, gapSizeS)) {
+			var gapTimer = new Timer(0, name, outputList[cursor].finish, element.start);
 
-			output.push(gapTimer);
-			cur++;
+			outputList.push(gapTimer);
+			cursor++;
 		}
 
-		output.push(element);
-		cur++;
+		outputList.push(element);
+		cursor++;
 	}
 
-	return output;
+	return outputList;
 }
 
 // Validate this value with a custom type guard (extend to your needs)
@@ -105,7 +110,9 @@ export function parseTimerList(str: string): TimerList {
 	}
 	return new TimerList(list);
 }
+
 export class TimerList {
+	private additionalS = 0;
 	public list: Timer[] = [];
 	public active?: Timer;
 
@@ -113,12 +120,12 @@ export class TimerList {
 	work_name: string = 'work';
 
 	constructor(list: Timer[], active?: Timer) {
-		this.list = fillGaps(list, this.rest_name);
+		this.list = fillEmptyGaps(list, this.rest_name);
 		this.active = active;
 	}
 
 	normalize(collapse: boolean) {
-		var timers = fillGaps(this.list, 'rest');
+		var timers = fillEmptyGaps(this.list, 'rest');
 		if (collapse) timers = collapseTimers(timers);
 
 		return timers;
@@ -205,18 +212,27 @@ export class TimerList {
 				duration += this.active.durationS();
 			}
 		}
-		return duration;
+		return duration + this.additionalS;
 	}
 
 	glueGaps(): TimerList {
-		this.list = fillGaps(this.list, this.rest_name);
+		this.list = fillEmptyGaps(this.list, this.rest_name);
 
 		if (this.active && this.list.length > 0) {
 			let lastTimer = this.list[this.list.length - 1];
-			if (farTimers(lastTimer, this.active)) {
+			if (hasLongGap(lastTimer, this.active)) {
 				this.list.push(new Timer(0, this.rest_name, lastTimer.finish, this.active.start));
 			}
 		}
 		return this;
+	}
+
+	addDursec(addDursecS: number): TimerList {
+		this.additionalS += addDursecS;
+		return this;
+	}
+
+	getAdditional(): number {
+		return this.additionalS;
 	}
 }

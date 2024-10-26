@@ -45,7 +45,7 @@ export function formatTimeHHMMSS(time: number) {
 	if (hours == 1) return `${hours} hour ${minutes} min`;
 	if (hours > 0) return `${hours} hours ${minutes} min`;
 
-	if (minutes > 10) return `${minutes} min`;
+	if (minutes >= 5) return `${minutes} min`;
 	if (minutes > 1) return `${minutes} min ${seconds} sec`;
 	return `${seconds} sec`;
 }

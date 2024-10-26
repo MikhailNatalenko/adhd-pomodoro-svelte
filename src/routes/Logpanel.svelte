@@ -59,7 +59,8 @@
 	<span>Active time: </span><span> {formatTimeHHMMSS(timerLogs.total())}</span>
 	<input type="checkbox" id="edit" name="edit" bind:checked={rawView} />
 	<label for="edit">Edit</label>
-
+	<button on:click={() => (timerLogs = timerLogs.addDursec(5 * 60))}> +5 min </button>
+	<button on:click={() => (timerLogs = timerLogs.addDursec(-5 * 60))}> -5 min </button>
 	<!-- <button on:click={() => (timerLogs = timerLogs.glueGaps())} class="save">Save gaps</button> -->
 </div>
 

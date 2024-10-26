@@ -1,4 +1,4 @@
-import { collapseTimers, fillGaps, TimerList } from './timerlog';
+import { collapseTimers, fillEmptyGaps, TimerList } from './timerlog';
 import { describe, it, expect } from 'vitest';
 import { Timer } from '$lib/types';
 
@@ -175,7 +175,7 @@ describe('fill gaps', () => {
 		gapTimer.finish = timer3workGapped.start;
 		gapTimer.name = 'rest';
 
-		let output = fillGaps(input);
+		let output = fillEmptyGaps(input);
 		expect(output).toStrictEqual([timer1, timer2work, gapTimer, timer3workGapped]);
 	});
 });
@@ -234,6 +234,34 @@ describe('check durationS', () => {
 
 		let output = list.total();
 		expect(output).toEqual(10);
+	});
+
+	it('w add + 5 sec', () => {
+		let list = new TimerList([timer1]);
+
+		list = list.addDursec(5);
+
+		let output = list.total();
+		expect(output).toEqual(15);
+	});
+
+	it('w add + 5 sec + 5 sec', () => {
+		let list = new TimerList([timer1]);
+
+		list = list.addDursec(5);
+		list = list.addDursec(5);
+
+		let output = list.total();
+		expect(output).toEqual(20);
+	});
+
+	it('w add - 5 sec', () => {
+		let list = new TimerList([timer1]);
+
+		list = list.addDursec(-5);
+
+		let output = list.total();
+		expect(output).toEqual(5);
 	});
 });
 
