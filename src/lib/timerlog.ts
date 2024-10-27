@@ -1,8 +1,9 @@
 import type { CachedLog } from '$lib/types';
 import { Timer } from '$lib/types';
 
-let default_gap = 60;
-export function farTimers(t1: Timer, t2: Timer, gap: number = default_gap): boolean {
+let DEFAULT_COLLAPSE_GAP_S = 60;
+let DEFAULT_LONG_GAP_S = 5 * 60;
+export function farTimers(t1: Timer, t2: Timer, gap: number = DEFAULT_COLLAPSE_GAP_S): boolean {
 	return (t2.start.getTime() - t1.finish.getTime()) / 1000 > gap;
 }
 
@@ -51,7 +52,7 @@ export function fillEmptyGaps(
 	cursor = 0;
 	for (let i = 1; i < timers.length; i++) {
 		const element = timers[i];
-		if (hasLongGap(outputList[cursor], element, gapSizeS)) {
+		if (farTimers(outputList[cursor], element, gapSizeS)) {
 			var gapTimer = new Timer(0, name, outputList[cursor].finish, element.start);
 
 			outputList.push(gapTimer);
