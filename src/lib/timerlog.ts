@@ -2,7 +2,7 @@ import type { CachedLog } from '$lib/types';
 import { Timer } from '$lib/types';
 
 let default_gap = 60;
-function farTimers(t1: Timer, t2: Timer, gap: number = default_gap): boolean {
+export function farTimers(t1: Timer, t2: Timer, gap: number = default_gap): boolean {
 	return (t2.start.getTime() - t1.finish.getTime()) / 1000 > gap;
 }
 
@@ -105,16 +105,15 @@ export function parseTimerList(str: string): TimerList {
 	}
 	return new TimerList(list);
 }
+
 export class TimerList {
 	public list: Timer[] = [];
-	public active?: Timer;
 
 	rest_name: string = 'rest';
 	work_name: string = 'work';
 
-	constructor(list: Timer[], active?: Timer) {
+	constructor(list: Timer[]) {
 		this.list = fillGaps(list, this.rest_name);
-		this.active = active;
 	}
 
 	normalize(collapse: boolean) {
@@ -138,27 +137,7 @@ export class TimerList {
 		return JSON.stringify(cached);
 	}
 
-	resetActive(): TimerList {
-		this.active = undefined;
-		return this;
-	}
-
-	setActive(active: Timer): TimerList {
-		this.active = active;
-		return this.glueGaps();
-	}
-
-	setActiveDur(_duration: number): TimerList {
-		if (this.active) {
-			this.active.finish = new Date();
-			return this;
-		}
-		return this;
-	}
-
 	addTimer(timer: Timer): TimerList {
-		this.active = undefined;
-
 		if (this.list.length > 0) {
 			//TODO: dirty hack. Propably I should fix it later
 			if (this.list[this.list.length - 1].start == timer.start) {
@@ -200,23 +179,19 @@ export class TimerList {
 			}
 		});
 
-		if (this.active) {
-			if (this.active.name == this.work_name) {
-				duration += this.active.durationS();
-			}
-		}
 		return duration;
 	}
 
-	glueGaps(): TimerList {
-		this.list = fillGaps(this.list, this.rest_name);
+	fillGaps(now = new Timer()): TimerList {
+		this.list = fillGaps(this.list);
 
-		if (this.active && this.list.length > 0) {
+		if (this.list.length > 0) {
 			let lastTimer = this.list[this.list.length - 1];
-			if (farTimers(lastTimer, this.active)) {
-				this.list.push(new Timer(0, this.rest_name, lastTimer.finish, this.active.start));
+			if (farTimers(lastTimer, now)) {
+				this.list.push(new Timer(0, this.rest_name, lastTimer.finish, now.start));
 			}
 		}
+
 		return this;
 	}
 }

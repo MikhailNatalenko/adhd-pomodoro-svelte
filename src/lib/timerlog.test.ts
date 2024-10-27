@@ -215,26 +215,26 @@ describe('check durationS', () => {
 		expect(output).toEqual(80);
 	});
 
-	it('w + w + aw', () => {
-		let list = new TimerList([timer1, timer2work], timer3work);
+	// it('w + w + aw', () => {
+	// 	let list = new TimerList([timer1, timer2work], timer3work);
 
-		let output = list.total();
-		expect(output).toEqual(80);
-	});
+	// 	let output = list.total();
+	// 	expect(output).toEqual(80);
+	// });
 
-	it('w + r + aw', () => {
-		let list = new TimerList([timer1, timer2rest], timer3work);
+	// it('w + r + aw', () => {
+	// 	let list = new TimerList([timer1, timer2rest], timer3work);
 
-		let output = list.total();
-		expect(output).toEqual(20);
-	});
+	// 	let output = list.total();
+	// 	expect(output).toEqual(20);
+	// });
 
-	it('w + r + ar', () => {
-		let list = new TimerList([timer1, timer2rest], timer3rest);
+	// it('w + r + ar', () => {
+	// 	let list = new TimerList([timer1, timer2rest], timer3rest);
 
-		let output = list.total();
-		expect(output).toEqual(10);
-	});
+	// 	let output = list.total();
+	// 	expect(output).toEqual(10);
+	// });
 });
 
 describe('check setDuration', () => {

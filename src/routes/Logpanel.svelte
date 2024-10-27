@@ -5,33 +5,20 @@
 	import type { Timer } from '$lib/types';
 	import { formatTimeHHMMSS } from '$lib/utils';
 	import { TimerList, parseTimerList } from '$lib/timerlog';
+	import { PomApp } from '$lib/pom_app';
 
 	////// props /////////////
-	export let timerLogs: TimerList = new TimerList([]);
+	export let pomApp: PomApp;
+	let timerLogs = new TimerList([]);
 
 	var normalized: Timer[] = [];
 	let mounted = false;
 	let rawView = false;
 
-	function updateLogs(logs: TimerList) {
-		if (logs == undefined) return;
-		if (!mounted) return;
-		Cookies.set('logs', logs.serialize(), { expires: 31 });
-	}
-
 	function updateParam(param: boolean, name: string) {
 		if (!mounted) return;
 		Cookies.set(name, param ? 'true' : 'false', { expires: 31 });
 		normalized = normalize(timerLogs);
-	}
-
-	function changeLineType(start: Date) {
-		timerLogs = timerLogs.changeLineType(start);
-	}
-
-	function deleteLine(start: Date) {
-		timerLogs.remove(start);
-		timerLogs = timerLogs;
 	}
 
 	function normalize(timers: TimerList) {
@@ -41,22 +28,18 @@
 	}
 
 	$: updateParam(rawView, 'raw_view');
-	$: updateLogs(timerLogs);
+	$: timerLogs = pomApp?.timerHistory;
 	$: normalized = normalize(timerLogs);
 
 	onMount(() => {
-		let logs = Cookies.get('logs');
-		console.log('cookies for logs contain', logs);
 		rawView = Cookies.get('raw_view') === 'true';
-
-		timerLogs = parseTimerList(logs == undefined ? '' : logs);
 		mounted = true;
 	});
 </script>
 
 <div>
-	<button on:click={() => (timerLogs = new TimerList([]))} class="clear">Clear logs</button>
-	<span>Active time: </span><span> {formatTimeHHMMSS(timerLogs.total())}</span>
+	<button on:click={() => (pomApp = pomApp.clearLogs())} class="clear">Clear logs</button>
+	<span>Active time: </span><span> {formatTimeHHMMSS(pomApp.totalTime())}</span>
 	<input type="checkbox" id="edit" name="edit" bind:checked={rawView} />
 	<label for="edit">Edit</label>
 
@@ -64,8 +47,8 @@
 </div>
 
 <div class="logs">
-	{#if timerLogs.active}
-		<Logline {...timerLogs.active} {rawView} toplog={true} /><br />
+	{#if pomApp.active}
+		<Logline {...pomApp.active} {rawView} toplog={true} /><br />
 		<!-- on:change={(event)=>changeLineType(event.detail)}  -->
 		<!-- on:remove={(event)=>deleteLine(event.detail)}/> -->
 	{/if}
@@ -75,8 +58,8 @@
 			{...log}
 			{rawView}
 			toplog={false}
-			on:change={(event) => changeLineType(event.detail)}
-			on:remove={(event) => deleteLine(event.detail)}
+			on:change={(event) => (pomApp = pomApp.changeLineType(event.detail))}
+			on:remove={(event) => (pomApp = pomApp.remove(event.detail))}
 		/>
 		<br />
 	{/each}

@@ -5,34 +5,37 @@
 
 	import type { TimerEvent } from '$lib/types';
 	import { TimerList } from '$lib/timerlog';
+	import { PomApp, loadPomAppFromCookies } from '$lib/pom_app';
 	import { onMount } from 'svelte';
 
 	let debug: boolean = false;
 
-	let timerLogs: TimerList;
+	let pomApp: PomApp = new PomApp();
 
 	let currentTimer: number;
 	let darkMode: boolean;
 	let loading = true;
 
-	$: timerLogs = timerLogs?.setActiveDur(currentTimer);
+	$: pomApp = pomApp?.setActiveDur(currentTimer);
 
 	function onTimer(event: TimerEvent) {
-		timerLogs = timerLogs.addTimer(event.detail);
+		pomApp = pomApp?.addTimer(event.detail);
 	}
 
 	function onActiveTimer(event: TimerEvent) {
-		timerLogs = timerLogs.setActive(event.detail);
+		pomApp = pomApp?.setActive(event.detail);
 	}
 
 	function onCancel() {
-		timerLogs = timerLogs.resetActive();
+		pomApp = pomApp?.resetActive();
 	}
 
 	onMount(() => {
 		darkMode = Cookies.get('darkmode') === 'true';
 		console.log('get darkmode:', darkMode);
 		loading = false;
+
+		pomApp = loadPomAppFromCookies();
 	});
 
 	function toggleDark() {
@@ -58,7 +61,7 @@
 				/>
 			</div>
 			<div class="logs">
-				<Logpanel bind:timerLogs />
+				<Logpanel bind:pomApp />
 			</div>
 		</div>
 	</main>
