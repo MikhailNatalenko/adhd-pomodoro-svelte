@@ -1,5 +1,5 @@
 import { Timer } from '$lib/types';
-import { TimerList, farTimers } from './timerlog';
+import { TimerList, hasLongGap } from './timerlog';
 import Cookies from 'js-cookie';
 import { parseTimerList } from './timerlog';
 
