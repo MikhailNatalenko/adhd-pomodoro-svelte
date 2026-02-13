@@ -1,5 +1,3 @@
-import { Timer } from '$lib/types';
-
 /// seconds -> 00:00
 export function formatTimeClock(time: number) {
 	let minutes = Math.floor(time / 60);

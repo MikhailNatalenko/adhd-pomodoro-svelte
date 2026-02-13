@@ -2,7 +2,6 @@
 	import type { TimerStateType } from '$lib/types';
 	import { TimerState } from '$lib/types';
 	import { base } from '$app/paths';
-	let timerState = TimerState.STOPPED;
 
 	const faviconStoped = base + '/tea.png';
 	const faviconRunning = base + '/clock_red.png';

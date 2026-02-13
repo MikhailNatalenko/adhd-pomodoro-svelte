@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { formatTimeLogline } from '$lib/utils';
-	import { fade, fly } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 	import { createEventDispatcher } from 'svelte';
 	import { TIMER_TYPES } from '$lib/constants';
 

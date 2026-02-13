@@ -37,11 +37,16 @@ function createTimerStore() {
 			update((data) => {
 				if (isPageVisible) {
 					// If page is visible, stop immediately
+					const updatedTimer = Object.assign(
+						Object.create(Object.getPrototypeOf(data.currentTimer)),
+						data.currentTimer,
+						{ finish: new Date() }
+					);
 					return {
 						...data,
 						state: TimerState.STOPPED,
 						clockDuration: 0,
-						currentTimer: { ...data.currentTimer, finish: new Date() }
+						currentTimer: updatedTimer
 					};
 				} else {
 					// Otherwise wait for user to return
@@ -57,12 +62,19 @@ function createTimerStore() {
 		 * Stop timer with completion
 		 */
 		stop: () => {
-			update((data) => ({
-				...data,
-				state: TimerState.STOPPED,
-				clockDuration: 0,
-				currentTimer: { ...data.currentTimer, finish: new Date() }
-			}));
+			update((data) => {
+				const updatedTimer = Object.assign(
+					Object.create(Object.getPrototypeOf(data.currentTimer)),
+					data.currentTimer,
+					{ finish: new Date() }
+				);
+				return {
+					...data,
+					state: TimerState.STOPPED,
+					clockDuration: 0,
+					currentTimer: updatedTimer
+				};
+			});
 		},
 
 		/**

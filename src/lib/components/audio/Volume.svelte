@@ -57,6 +57,7 @@
 
 	.slider {
 		-webkit-appearance: none;
+		appearance: none;
 		width: 120px;
 		height: 8px;
 		border-radius: 4px;

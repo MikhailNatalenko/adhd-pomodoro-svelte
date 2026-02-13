@@ -49,14 +49,6 @@
 		};
 	}
 
-	// Function to save volume level to cookie
-	/**
-	 * @param {number} volume
-	 */
-	function saveVolumeToCookie(volume) {
-		document.cookie = `volume=${volume};expires=Fri, 31 Dec 9999 23:59:59 GMT;path=/`;
-	}
-
 	// Function to play the alert sound
 	export function playAlertSound() {
 		innerPlayer();
@@ -72,8 +64,5 @@
 		if (doSoundCheck) {
 			playAlertSound();
 		}
-
-		// Save volume level to cookie
-		// saveVolumeToCookie(value);
 	}
 </script>
