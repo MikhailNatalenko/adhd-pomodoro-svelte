@@ -1,6 +1,4 @@
 <script lang="ts">
-	// @ts-nocheck
-
 	import Clock from './Clock.svelte';
 	import Controls from './Controls.svelte';
 	import Volume from './audio/Volume.svelte';
@@ -10,7 +8,7 @@
 	import { onMount } from 'svelte';
 	import { playAlertSound } from './audio/Ringer.svelte';
 	import { createEventDispatcher } from 'svelte';
-	import { TimerState, Timer, EmitTimer } from '$lib/types';
+	import { TimerState, Timer, EmitTimer, type TimerStateType } from '$lib/types';
 	import { changeFavicon } from './Favicon.svelte';
 	import { getParam } from '$lib/constants';
 
@@ -19,23 +17,30 @@
 	// decrease timings or not
 	export let debugFlag: boolean;
 	// state of pomodoro
-	let timerState = TimerState.STOPPED;
+	let timerState: TimerStateType = TimerState.STOPPED;
 	// object of Timer to send on finish
 	let currentTimer = new Timer();
 	// limit for visual clock
 	let pomodoroClock = 0;
 	// time for visual clock
-	export let remainedSeconds;
+	export let remainedSeconds: number;
 
-	let controlsComponent;
+	let controlsComponent: Controls;
 
 	$: changeFavicon(timerState);
 
-	function startTimer(num) {
+	function startTimer(num: number) {
 		pomodoroClock = num * getParam(debugFlag).timersMultiplier;
 	}
 
-	function onStartTimer(event: Any) {
+	interface TimerStartEvent {
+		detail: {
+			timer: number;
+			name: string;
+		};
+	}
+
+	function onStartTimer(event: TimerStartEvent) {
 		if (timerState === TimerState.RUNNING) {
 			onStopTimer(EmitTimer.EMIT);
 		}
@@ -90,7 +95,7 @@
 	bind:this={controlsComponent}
 	active={timerState === TimerState.STOPPED}
 	on:start={onStartTimer}
-	on:stop={onStopTimer(EmitTimer.DO_NOT_EMIT)}
+	on:stop={() => onStopTimer(EmitTimer.DO_NOT_EMIT)}
 >
 	<div class="clock">
 		<Clock
@@ -104,9 +109,7 @@
 		</Tooltip>
 		{#if timerState !== TimerState.STOPPED}
 			<Tooltip title="stop and don't save logs">
-				<button id="stopper" on:click={cancelTimer} hidden={timerState === TimerState.STOPPED}
-					>cancel</button
-				> <br />
+				<button id="stopper" on:click={cancelTimer}>cancel</button> <br />
 			</Tooltip>
 		{/if}
 	</div>
@@ -115,7 +118,7 @@
 <Annoyer
 	active={timerState === TimerState.WAITING_FOR_STOP}
 	{debugFlag}
-	on:off={onStopTimer(EmitTimer.DO_NOT_EMIT)}
+	on:off={() => onStopTimer(EmitTimer.DO_NOT_EMIT)}
 />
 
 <style>
