@@ -1,54 +1,49 @@
 <script lang="ts">
 	import Pomodoro from './Pomodoro.svelte';
 	import Logpanel from './Logpanel.svelte';
-	import Cookies from 'js-cookie';
 
 	import type { TimerEvent } from '$lib/types';
-	import { TimerList } from '$lib/timerlog';
-	import { PomApp, loadPomAppFromCookies } from '$lib/pom_app';
+	import { pomApp, darkMode } from '$lib/stores/pomodoroStore';
 	import { onMount } from 'svelte';
 
 	let debug: boolean = false;
-
-	let pomApp: PomApp = new PomApp();
-
 	let currentTimer: number;
-	let darkMode: boolean;
 	let loading = true;
 
-	$: pomApp = pomApp?.setActiveDur(currentTimer);
+	$: if ($pomApp && currentTimer !== undefined) {
+		pomApp.update((app) => {
+			app.setActiveDur(currentTimer);
+			return app;
+		});
+	}
 
 	function onTimer(event: TimerEvent) {
-		pomApp = pomApp?.addTimer(event.detail);
+		pomApp.update((app) => app.addTimer(event.detail));
 	}
 
 	function onActiveTimer(event: TimerEvent) {
-		pomApp = pomApp?.setActive(event.detail);
+		pomApp.update((app) => app.setActive(event.detail));
 	}
 
 	function onCancel() {
-		pomApp = pomApp?.resetActive();
+		pomApp.update((app) => app.resetActive());
 	}
 
 	onMount(() => {
-		darkMode = Cookies.get('darkmode') === 'true';
-		console.log('get darkmode:', darkMode);
+		console.log('get darkmode:', $darkMode);
 		loading = false;
-
-		pomApp = loadPomAppFromCookies();
 	});
 
 	function toggleDark() {
-		darkMode = !darkMode;
-		console.log('toggle dark', darkMode);
-		Cookies.set('darkmode', darkMode ? 'true' : 'false', { expires: 31 });
+		darkMode.update((value) => !value);
+		console.log('toggle dark', $darkMode);
 	}
 </script>
 
 {#if loading}
 	<main style="background-color:gray; height:90 	vh"></main>
 {:else}
-	<main class:dark={darkMode}>
+	<main class:dark={$darkMode}>
 		<div class="container">
 			<div class="pomodoro">
 				<h1 class="logo">Let's Pomodoro!</h1>
@@ -61,7 +56,7 @@
 				/>
 			</div>
 			<div class="logs">
-				<Logpanel bind:pomApp />
+				<Logpanel />
 			</div>
 		</div>
 	</main>

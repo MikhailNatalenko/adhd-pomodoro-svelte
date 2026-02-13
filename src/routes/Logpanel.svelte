@@ -1,55 +1,32 @@
 <script lang="ts">
 	import Logline from './Logline.svelte';
-	import Cookies from 'js-cookie';
-	import { onMount } from 'svelte';
 	import type { Timer } from '$lib/types';
 	import { formatTimeHHMMSS } from '$lib/utils';
-	import { TimerList, parseTimerList } from '$lib/timerlog';
-	import { PomApp } from '$lib/pom_app';
-
-	////// props /////////////
-	export let pomApp: PomApp;
-	let timerLogs = new TimerList([]);
+	import { pomApp, rawView, totalTime } from '$lib/stores/pomodoroStore';
 
 	var normalized: Timer[] = [];
-	let mounted = false;
-	let rawView = false;
 
-	function updateParam(param: boolean, name: string) {
-		if (!mounted) return;
-		Cookies.set(name, param ? 'true' : 'false', { expires: 31 });
-		normalized = normalize(timerLogs);
+	function normalize(app: typeof $pomApp, raw: boolean) {
+		if (!app?.timerHistory) return [];
+		return app.timerHistory.normalize(!raw);
 	}
 
-	function normalize(timers: TimerList) {
-		if (timers == undefined) return [];
-
-		return timers.normalize(!rawView);
-	}
-
-	$: updateParam(rawView, 'raw_view');
-	$: timerLogs = pomApp?.timerHistory;
-	$: normalized = normalize(timerLogs);
-
-	onMount(() => {
-		rawView = Cookies.get('raw_view') === 'true';
-		mounted = true;
-	});
+	$: normalized = normalize($pomApp, $rawView);
 </script>
 
 <div>
-	<button on:click={() => (pomApp = pomApp.clearLogs())} class="clear">Clear logs</button>
-	<span>Active time: </span><span> {formatTimeHHMMSS(pomApp.totalTime())}</span>
-	<input type="checkbox" id="edit" name="edit" bind:checked={rawView} />
+	<button on:click={() => pomApp.update((app) => app.clearLogs())} class="clear">Clear logs</button>
+	<span>Active time: </span><span> {formatTimeHHMMSS($totalTime)}</span>
+	<input type="checkbox" id="edit" name="edit" bind:checked={$rawView} />
 	<label for="edit">Edit</label>
-	<button on:click={() => (timerLogs = timerLogs.addDursec(5 * 60))}> +5 min </button>
-	<button on:click={() => (timerLogs = timerLogs.addDursec(-5 * 60))}> -5 min </button>
-	<!-- <button on:click={() => (timerLogs = timerLogs.glueGaps())} class="save">Save gaps</button> -->
+	<button on:click={() => pomApp.update((app) => { app.timerHistory.addDursec(5 * 60); return app; })}> +5 min </button>
+	<button on:click={() => pomApp.update((app) => { app.timerHistory.addDursec(-5 * 60); return app; })}> -5 min </button>
+	<!-- <button on:click={() => pomApp.update((app) => { app.timerHistory.glueGaps(); return app; })} class="save">Save gaps</button> -->
 </div>
 
 <div class="logs">
-	{#if pomApp.active}
-		<Logline {...pomApp.active} {rawView} toplog={true} /><br />
+	{#if $pomApp.active}
+		<Logline {...$pomApp.active} rawView={$rawView} toplog={true} /><br />
 		<!-- on:change={(event)=>changeLineType(event.detail)}  -->
 		<!-- on:remove={(event)=>deleteLine(event.detail)}/> -->
 	{/if}
@@ -57,10 +34,10 @@
 	{#each [...normalized].reverse() as log (log.start)}
 		<Logline
 			{...log}
-			{rawView}
+			rawView={$rawView}
 			toplog={false}
-			on:change={(event) => (pomApp = pomApp.changeLineType(event.detail))}
-			on:remove={(event) => (pomApp = pomApp.remove(event.detail))}
+			on:change={(event) => pomApp.update((app) => app.changeLineType(event.detail))}
+			on:remove={(event) => pomApp.update((app) => app.remove(event.detail))}
 		/>
 		<br />
 	{/each}

@@ -1,7 +1,5 @@
 import { Timer } from '$lib/types';
-import { TimerList, hasLongGap } from './timerlog';
-import Cookies from 'js-cookie';
-import { parseTimerList } from './timerlog';
+import { TimerList } from './timerlog';
 
 export class PomApp {
 	public timerHistory: TimerList;
@@ -19,33 +17,23 @@ export class PomApp {
 	///
 	addTimer(timer: Timer): PomApp {
 		this.active = undefined;
-
 		this.timerHistory.addTimer(timer);
-		this.serializeList();
 		return this;
 	}
 
 	remove(start: Date): PomApp {
 		this.timerHistory.remove(start);
-		this.serializeList();
 		return this;
 	}
 
 	changeLineType(start: Date): PomApp {
 		this.timerHistory.changeLineType(start);
-		this.serializeList();
 		return this;
 	}
 
 	clearLogs(): PomApp {
 		this.timerHistory = new TimerList([]);
-		this.serializeList();
 		return this;
-	}
-
-	//TODO: do we actually need it?
-	serializeList() {
-		Cookies.set('logs', this.timerHistory.serialize(), { expires: 31 });
 	}
 
 	////////
@@ -83,11 +71,3 @@ export class PomApp {
 	}
 }
 
-export function loadPomAppFromCookies(): PomApp {
-	let logs = Cookies.get('logs');
-	console.log('cookies for logs contain', logs);
-
-	let ret = new PomApp();
-	ret.timerHistory = parseTimerList(logs == undefined ? '' : logs);
-	return ret;
-}
