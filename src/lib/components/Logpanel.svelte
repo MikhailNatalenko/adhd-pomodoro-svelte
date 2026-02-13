@@ -40,7 +40,7 @@
 	</button>
 </div>
 
-<TimelineGraph timers={normalized} />
+<TimelineGraph timers={normalized} activeTimer={$pomApp.active} />
 
 <div class="logs">
 	{#if $pomApp.active}
