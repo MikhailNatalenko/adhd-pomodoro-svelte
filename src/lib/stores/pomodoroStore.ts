@@ -60,3 +60,12 @@ export const rawView = persistentStore<boolean>('raw_view', false, {
  * Derived store for total active time
  */
 export const totalTime = derived(pomApp, ($pomApp) => $pomApp.totalTime());
+
+/**
+ * Volume setting (0-100)
+ */
+export const volume = persistentStore<number>('volume', 10, {
+	storage: 'cookies',
+	serialize: (value) => value.toString(),
+	deserialize: (value) => parseInt(value, 10)
+});

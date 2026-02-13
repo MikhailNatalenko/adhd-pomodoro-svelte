@@ -1,46 +1,28 @@
 <script lang="ts">
 	import { setVolume } from '$lib/components/audio/Ringer.svelte';
-	import Cookies from 'js-cookie';
-	import { onMount } from 'svelte';
+	import { volume } from '$lib/stores/pomodoroStore';
 	import { base } from '$app/paths';
 
-	let initialVolume: number;
+	let volumeBar = $volume;
 
-	$: volume = initialVolume;
-	$: volumeBar = volume;
-
-	let mounted = false;
-
-	$: if (mounted) {
-		console.log('volume', volume);
-		setVolume(volume / 100, true);
-
-		Cookies.set('volume', volume.toString(), { expires: 31 });
+	// Update audio volume when store changes
+	$: {
+		console.log('volume', $volume);
+		setVolume($volume / 100, true);
+		volumeBar = $volume;
 	}
 
 	function handleMouseUp(event: any) {
-		volume = event.target.value;
+		$volume = parseInt(event.target.value, 10);
 	}
 
 	function mute() {
-		volume = 0;
+		$volume = 0;
 	}
 
 	function volumemax() {
-		volume = 100;
-		volumeBar = 100;
+		$volume = 100;
 	}
-
-	onMount(() => {
-		const vol = Cookies.get('volume');
-		console.log('vol', vol);
-		mounted = true;
-		if (vol == undefined) {
-			initialVolume = 10;
-			return;
-		}
-		initialVolume = parseInt(vol);
-	});
 </script>
 
 <label>
