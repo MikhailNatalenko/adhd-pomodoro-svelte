@@ -28,10 +28,6 @@
 	class:pressed>{value} min</button
 >
 
-<!-- <button on:click={function(){startWork("work")}} >Работа</button>
-<input type="number" min="1" max="9999" value={value} disabled={disabled}/>
-<button on:click={function(){startWork("rest")}} disabled={disabled}>Отдых</button> -->
-
 <style>
 	@import '../../styles/button.css';
 	.active {
