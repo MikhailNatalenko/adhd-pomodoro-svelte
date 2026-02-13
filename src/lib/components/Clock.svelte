@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import { playAlertSound } from './audio/Ringer.svelte';
-	import Tooltip from './Tooltip.svelte';
+	import { playAlertSound } from '$lib/components/audio/Ringer.svelte';
+	import Tooltip from '$lib/components/Tooltip.svelte';
 	import { formatTimeClock } from '$lib/utils';
 	import { PreciseTimer } from '$lib/precise_timer';
 
@@ -37,7 +37,7 @@
 </Tooltip>
 
 <style>
-	@import './../styles/fonts.css';
+	@import '../../styles/fonts.css';
 
 	#watch {
 		border: none;

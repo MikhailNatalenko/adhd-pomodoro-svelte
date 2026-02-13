@@ -1,15 +1,15 @@
 <script lang="ts">
-	import Clock from './Clock.svelte';
-	import Controls from './Controls.svelte';
-	import Volume from './audio/Volume.svelte';
-	import Annoyer from './Annoyer.svelte';
-	import Tooltip from './Tooltip.svelte';
+	import Clock from '$lib/components/Clock.svelte';
+	import Controls from '$lib/components/Controls.svelte';
+	import Volume from '$lib/components/audio/Volume.svelte';
+	import Annoyer from '$lib/components/Annoyer.svelte';
+	import Tooltip from '$lib/components/Tooltip.svelte';
 
 	import { onMount } from 'svelte';
-	import { playAlertSound } from './audio/Ringer.svelte';
+	import { playAlertSound } from '$lib/components/audio/Ringer.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { TimerState, Timer, EmitTimer, type TimerStateType } from '$lib/types';
-	import { changeFavicon } from './Favicon.svelte';
+	import { changeFavicon } from '$lib/components/Favicon.svelte';
 	import { getParam } from '$lib/constants';
 
 	const dispatch = createEventDispatcher();
@@ -122,7 +122,7 @@
 />
 
 <style>
-	@import './../styles/button.css';
+	@import '../../styles/button.css';
 
 	.clock {
 		text-align: center;

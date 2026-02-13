@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Logline from './Logline.svelte';
+	import Logline from '$lib/components/Logline.svelte';
 	import type { Timer } from '$lib/types';
 	import { formatTimeHHMMSS } from '$lib/utils';
 	import { pomApp, rawView, totalTime } from '$lib/stores/pomodoroStore';
@@ -44,8 +44,8 @@
 </div>
 
 <style>
-	@import './../styles/button.css';
-	@import './../styles/fonts.css';
+	@import '../../styles/button.css';
+	@import '../../styles/fonts.css';
 	.clear {
 		margin: 10px;
 		/* background-color: rgb(88, 18, 39); */

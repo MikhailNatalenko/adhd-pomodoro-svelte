@@ -1,5 +1,5 @@
 <script lang="ts">
-	import TimerStarter from './TimerStarter.svelte';
+	import TimerStarter from '$lib/components/TimerStarter.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { TIMER_TYPES } from '$lib/constants';
 
@@ -55,7 +55,7 @@
 </div>
 
 <style>
-	@import './../styles/fonts.css';
+	@import '../../styles/fonts.css';
 	.grid-container {
 		display: grid;
 		grid-template-columns: 1fr 3fr 1fr;

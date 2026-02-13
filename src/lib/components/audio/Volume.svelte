@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { setVolume } from './Ringer.svelte';
+	import { setVolume } from '$lib/components/audio/Ringer.svelte';
 	import Cookies from 'js-cookie';
 	import { onMount } from 'svelte';
 	import { base } from '$app/paths';

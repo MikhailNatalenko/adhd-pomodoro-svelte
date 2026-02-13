@@ -33,7 +33,7 @@
 <button on:click={function(){startWork("rest")}} disabled={disabled}>Отдых</button> -->
 
 <style>
-	@import './../styles/button.css';
+	@import '../../styles/button.css';
 	.active {
 		background-color: var(--work-buttons);
 	}

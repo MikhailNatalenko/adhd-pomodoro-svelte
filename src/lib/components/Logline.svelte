@@ -59,7 +59,7 @@
 </snap>
 
 <style>
-	@import './../styles/fonts.css';
+	@import '../../styles/fonts.css';
 
 	.logline {
 		font-family: 'title_hero_regular';

@@ -33,7 +33,7 @@
 {/if}
 
 <style>
-	@import './../styles/fonts.css';
+	@import '../../styles/fonts.css';
 	.tooltip {
 		font-family: Roboto-Regular;
 		border: 1px solid #ddd;

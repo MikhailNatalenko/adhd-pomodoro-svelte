@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import { playAlertSound } from './audio/Ringer.svelte';
+	import { playAlertSound } from '$lib/components/audio/Ringer.svelte';
 	import { getParam } from '$lib/constants';
 
 	const dispatch = createEventDispatcher();

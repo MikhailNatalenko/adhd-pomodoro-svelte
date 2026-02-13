@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Pomodoro from './Pomodoro.svelte';
-	import Logpanel from './Logpanel.svelte';
+	import Pomodoro from '$lib/components/Pomodoro.svelte';
+	import Logpanel from '$lib/components/Logpanel.svelte';
 
 	import type { TimerEvent } from '$lib/types';
 	import { pomApp, darkMode } from '$lib/stores/pomodoroStore';
