@@ -1,5 +1,6 @@
 <script lang="ts">
 	import LogLine from '$lib/components/LogLine.svelte';
+	import TimelineGraph from '$lib/components/TimelineGraph.svelte';
 	import type { Timer } from '$lib/types';
 	import { formatTimeHHMMSS } from '$lib/utils';
 	import { pomApp, rawView, totalTime } from '$lib/stores/pomodoroStore';
@@ -38,6 +39,8 @@
 		-5 min
 	</button>
 </div>
+
+<TimelineGraph timers={normalized} />
 
 <div class="logs">
 	{#if $pomApp.active}
