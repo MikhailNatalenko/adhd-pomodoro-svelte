@@ -1,6 +1,7 @@
 import { collapseTimers, fillEmptyGaps, TimerList } from './timerlog';
 import { describe, it, expect } from 'vitest';
 import { Timer } from '$lib/types';
+import { TIMER_TYPES } from './constants';
 
 describe('collapse timers test', () => {
 	it('one timer with work', () => {
@@ -8,7 +9,7 @@ describe('collapse timers test', () => {
 
 		case1.start = new Date(100);
 		case1.finish = new Date(1000);
-		case1.name = 'work';
+		case1.name = TIMER_TYPES.WORK;
 		let input = [case1];
 
 		let output = collapseTimers(input);
@@ -20,7 +21,7 @@ describe('collapse timers test', () => {
 
 		case1.start = new Date(100);
 		case1.finish = new Date(1000);
-		case1.name = 'rest';
+		case1.name = TIMER_TYPES.REST;
 		let input = [case1];
 
 		let output = collapseTimers(input);
@@ -31,7 +32,7 @@ describe('collapse timers test', () => {
 
 	timer1.start = new Date(Date.parse('01 Jan 1970 00:00:00 GMT'));
 	timer1.finish = new Date(Date.parse('01 Jan 1970 00:20:00 GMT'));
-	timer1.name = 'work';
+	timer1.name = TIMER_TYPES.WORK;
 
 	var timer2work = new Timer();
 	timer2work.start = new Date(Date.parse('01 Jan 1970 00:20:00 GMT'));
@@ -41,17 +42,17 @@ describe('collapse timers test', () => {
 	var timer2rest = new Timer();
 	timer2rest.start = new Date(Date.parse('01 Jan 1970 00:20:00 GMT'));
 	timer2rest.finish = new Date(Date.parse('01 Jan 1970 00:40:00 GMT'));
-	timer2rest.name = 'rest';
+	timer2rest.name = TIMER_TYPES.REST;
 
 	var timer3work = new Timer();
 	timer3work.start = new Date(Date.parse('01 Jan 1970 00:40:00 GMT'));
 	timer3work.finish = new Date(Date.parse('01 Jan 1970 00:45:00 GMT'));
-	timer3work.name = 'work';
+	timer3work.name = TIMER_TYPES.WORK;
 
 	var timer3rest = new Timer();
 	timer3rest.start = timer3work.start;
 	timer3rest.finish = timer3work.finish;
-	timer3rest.name = 'rest';
+	timer3rest.name = TIMER_TYPES.REST;
 
 	it('two timers that collapse', () => {
 		let input = [timer1, timer2work];
@@ -82,7 +83,7 @@ describe('collapse timers test', () => {
 		var outTimer = new Timer();
 		outTimer.start = timer1.start;
 		outTimer.finish = timer3work.finish;
-		outTimer.name = 'work';
+		outTimer.name = TIMER_TYPES.WORK;
 
 		let output = collapseTimers(input);
 		expect(output).toStrictEqual([outTimer]);
@@ -101,7 +102,7 @@ describe('collapse timers test', () => {
 		var outTimer = new Timer();
 		outTimer.start = timer2rest.start;
 		outTimer.finish = timer3rest.finish;
-		outTimer.name = 'rest';
+		outTimer.name = TIMER_TYPES.REST;
 
 		let output = collapseTimers(input);
 		expect(output).toStrictEqual([timer1, outTimer]);
@@ -113,7 +114,7 @@ describe('collapse timers test', () => {
 		var outTimer = new Timer();
 		outTimer.start = timer2rest.start;
 		outTimer.finish = timer3rest.finish;
-		outTimer.name = 'rest';
+		outTimer.name = TIMER_TYPES.REST;
 
 		let output = collapseTimers(input);
 		expect(output).toStrictEqual([timer1, outTimer]);
@@ -125,7 +126,7 @@ describe('collapse timers test check intervals gaps', () => {
 
 	timer1.start = new Date(Date.parse('01 Jan 1970 00:00:00 GMT'));
 	timer1.finish = new Date(Date.parse('01 Jan 1970 00:20:00 GMT'));
-	timer1.name = 'work';
+	timer1.name = TIMER_TYPES.WORK;
 
 	var timer2work = new Timer();
 	timer2work.start = new Date(Date.parse('01 Jan 1970 00:20:00 GMT'));
@@ -135,7 +136,7 @@ describe('collapse timers test check intervals gaps', () => {
 	var timer3workGapped = new Timer();
 	timer3workGapped.start = new Date(Date.parse('01 Jan 1970 00:46:01 GMT'));
 	timer3workGapped.finish = new Date(Date.parse('01 Jan 1970 01:00:00 GMT'));
-	timer3workGapped.name = 'work';
+	timer3workGapped.name = TIMER_TYPES.WORK;
 
 	it('w + w + gap + w', () => {
 		let input = [timer1, timer2work, timer3workGapped];
@@ -143,7 +144,7 @@ describe('collapse timers test check intervals gaps', () => {
 		var outTimer = new Timer();
 		outTimer.start = timer1.start;
 		outTimer.finish = timer2work.finish;
-		outTimer.name = 'work';
+		outTimer.name = TIMER_TYPES.WORK;
 
 		let output = collapseTimers(input);
 		expect(output).toStrictEqual([outTimer, timer3workGapped]);
@@ -155,7 +156,7 @@ describe('fill gaps', () => {
 
 	timer1.start = new Date(Date.parse('01 Jan 1970 00:00:00 GMT'));
 	timer1.finish = new Date(Date.parse('01 Jan 1970 00:20:00 GMT'));
-	timer1.name = 'work';
+	timer1.name = TIMER_TYPES.WORK;
 
 	var timer2work = new Timer();
 	timer2work.start = new Date(Date.parse('01 Jan 1970 00:20:00 GMT'));
@@ -165,7 +166,7 @@ describe('fill gaps', () => {
 	var timer3workGapped = new Timer();
 	timer3workGapped.start = new Date(Date.parse('01 Jan 1970 00:50:01 GMT'));
 	timer3workGapped.finish = new Date(Date.parse('01 Jan 1970 01:00:00 GMT'));
-	timer3workGapped.name = 'work';
+	timer3workGapped.name = TIMER_TYPES.WORK;
 
 	it('w + w + gap + w', () => {
 		let input = [timer1, timer2work, timer3workGapped];
@@ -173,7 +174,7 @@ describe('fill gaps', () => {
 		var gapTimer = new Timer();
 		gapTimer.start = timer2work.finish;
 		gapTimer.finish = timer3workGapped.start;
-		gapTimer.name = 'rest';
+		gapTimer.name = TIMER_TYPES.REST;
 
 		let output = fillEmptyGaps(input);
 		expect(output).toStrictEqual([timer1, timer2work, gapTimer, timer3workGapped]);
@@ -185,7 +186,7 @@ describe('check durationS', () => {
 
 	timer1.start = new Date(Date.parse('01 Jan 1970 00:00:00 GMT'));
 	timer1.finish = new Date(Date.parse('01 Jan 1970 00:00:10 GMT'));
-	timer1.name = 'work';
+	timer1.name = TIMER_TYPES.WORK;
 
 	var timer2work = new Timer();
 	timer2work.start = new Date(Date.parse('01 Jan 1970 00:20:00 GMT'));
@@ -195,17 +196,17 @@ describe('check durationS', () => {
 	var timer2rest = new Timer();
 	timer2rest.start = new Date(Date.parse('01 Jan 1970 00:20:00 GMT'));
 	timer2rest.finish = new Date(Date.parse('01 Jan 1970 00:21:00 GMT'));
-	timer2rest.name = 'rest';
+	timer2rest.name = TIMER_TYPES.REST;
 
 	var timer3work = new Timer();
 	timer3work.start = new Date(Date.parse('01 Jan 1970 00:40:00 GMT'));
 	timer3work.finish = new Date(Date.parse('01 Jan 1970 00:40:10 GMT'));
-	timer3work.name = 'work';
+	timer3work.name = TIMER_TYPES.WORK;
 
 	var timer3rest = new Timer();
 	timer3rest.start = new Date(Date.parse('01 Jan 1970 00:40:00 GMT'));
 	timer3rest.finish = new Date(Date.parse('01 Jan 1970 00:40:10 GMT'));
-	timer3rest.name = 'rest';
+	timer3rest.name = TIMER_TYPES.REST;
 
 	// it ()
 	it('w + w + w', () => {
@@ -242,7 +243,7 @@ describe('check setDuration', () => {
 
 	timer1.start = new Date(Date.parse('01 Jan 1970 00:00:00 GMT'));
 	timer1.finish = new Date(Date.parse('01 Jan 1970 00:00:01 GMT'));
-	timer1.name = 'work';
+	timer1.name = TIMER_TYPES.WORK;
 
 	// it ()
 	it('set 10 sec', () => {

@@ -1,12 +1,10 @@
 import { Timer } from '$lib/types';
 import { TimerList } from './timerlog';
+import { TIMER_TYPES } from './constants';
 
 export class PomApp {
 	public timerHistory: TimerList;
 	public active?: Timer;
-
-	//TODO: Refactor these names somehow. Use enum or smth
-	work_name = 'work';
 
 	constructor() {
 		this.timerHistory = new TimerList([]);
@@ -63,7 +61,7 @@ export class PomApp {
 		let duration = this.timerHistory.total();
 
 		if (this.active) {
-			if (this.active.name == this.work_name) {
+			if (this.active.name == TIMER_TYPES.WORK) {
 				duration += this.active.durationS();
 			}
 		}

@@ -1,3 +1,16 @@
+/**
+ * Timer type constants
+ */
+export const TIMER_TYPES = {
+	WORK: 'work',
+	REST: 'rest'
+} as const;
+
+export type TimerType = (typeof TIMER_TYPES)[keyof typeof TIMER_TYPES];
+
+/**
+ * Debug and production parameters
+ */
 export const dbgParams = {
 	afterClockIntervaltS: 3,
 	afterClockTimeoutS: 10,

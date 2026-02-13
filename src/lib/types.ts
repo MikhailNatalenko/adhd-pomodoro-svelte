@@ -1,10 +1,12 @@
+import type { TimerType } from './constants';
+
 export class Timer {
 	start: Date;
 	finish: Date;
-	name: string;
+	name: TimerType | string;
 	value: number;
 
-	constructor(value = 0, name = '', start = new Date(), finish = new Date()) {
+	constructor(value = 0, name: TimerType | string = '', start = new Date(), finish = new Date()) {
 		this.start = start;
 		this.finish = finish;
 		this.name = name;

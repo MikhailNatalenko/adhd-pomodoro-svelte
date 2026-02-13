@@ -2,6 +2,7 @@
 	import { formatTimeLogline } from '$lib/utils';
 	import { fade, fly } from 'svelte/transition';
 	import { createEventDispatcher } from 'svelte';
+	import { TIMER_TYPES } from '$lib/constants';
 
 	const dispatch = createEventDispatcher();
 
@@ -20,7 +21,7 @@
 	$: duration = (finish.getTime() - start.getTime()) / 1000;
 
 	let startClock = formatTs(start);
-	$: rest = name === 'rest';
+	$: rest = name === TIMER_TYPES.REST;
 
 	function changeType(start: Date) {
 		dispatch('change', start);

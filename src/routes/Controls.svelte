@@ -1,6 +1,7 @@
 <script lang="ts">
 	import TimerStarter from './TimerStarter.svelte';
 	import { createEventDispatcher } from 'svelte';
+	import { TIMER_TYPES } from '$lib/constants';
 
 	const dispatch = createEventDispatcher();
 
@@ -30,7 +31,7 @@
 			{#each timers as timer, i}
 				<TimerStarter
 					value={timer}
-					name={'work'}
+					name={TIMER_TYPES.WORK}
 					on:start={handleTimerStart}
 					bind:this={childComponents[i]}
 				/>
@@ -43,7 +44,7 @@
 			{#each timers as timer, i}
 				<TimerStarter
 					value={timer}
-					name={'rest'}
+					name={TIMER_TYPES.REST}
 					on:start={handleTimerStart}
 					bind:this={childComponents[i + childComponents.length]}
 				/>

@@ -1,5 +1,6 @@
 import type { CachedLog } from '$lib/types';
 import { Timer } from '$lib/types';
+import { TIMER_TYPES } from './constants';
 
 let DEFAULT_COLLAPSE_GAP_S = 60;
 let DEFAULT_LONG_GAP_S = 5 * 60;
@@ -39,7 +40,7 @@ export function collapseTimers(timers: Timer[], gap: number = DEFAULT_COLLAPSE_G
 
 export function fillEmptyGaps(
 	timers: Timer[],
-	name = 'rest',
+	name = TIMER_TYPES.REST,
 	gapSizeS: number = DEFAULT_LONG_GAP_S
 ) {
 	var outputList: Timer[] = [];
@@ -114,15 +115,12 @@ export class TimerList {
 	private additionalS = 0;
 	public list: Timer[] = [];
 
-	rest_name: string = 'rest';
-	work_name: string = 'work';
-
 	constructor(list: Timer[]) {
-		this.list = fillEmptyGaps(list, this.rest_name);
+		this.list = fillEmptyGaps(list, TIMER_TYPES.REST);
 	}
 
 	normalize(collapse: boolean) {
-		var timers = fillEmptyGaps(this.list, 'rest');
+		var timers = fillEmptyGaps(this.list, TIMER_TYPES.REST);
 		if (collapse) timers = collapseTimers(timers);
 
 		return timers;
@@ -158,7 +156,7 @@ export class TimerList {
 	changeLineType(start: Date): TimerList {
 		this.list.forEach((timer) => {
 			if (timer.start === start) {
-				timer.name = timer.name === this.rest_name ? this.work_name : this.rest_name;
+				timer.name = timer.name === TIMER_TYPES.REST ? TIMER_TYPES.WORK : TIMER_TYPES.REST;
 			}
 		});
 
@@ -179,7 +177,7 @@ export class TimerList {
 	total() {
 		let duration = 0;
 		this.list.forEach((element) => {
-			if (element.name == this.work_name) {
+			if (element.name == TIMER_TYPES.WORK) {
 				duration += element.durationS();
 			}
 		});
@@ -193,7 +191,7 @@ export class TimerList {
 		if (this.list.length > 0) {
 			let lastTimer = this.list[this.list.length - 1];
 			if (hasLongGap(lastTimer, now)) {
-				this.list.push(new Timer(0, this.rest_name, lastTimer.finish, now.start));
+				this.list.push(new Timer(0, TIMER_TYPES.REST, lastTimer.finish, now.start));
 			}
 		}
 
