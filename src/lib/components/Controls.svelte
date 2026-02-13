@@ -9,8 +9,14 @@
 
 	let timers = [5, 10, 15, 20, 25, 120];
 
-	// @ts-ignore
-	function handleTimerStart(event) {
+	interface TimerStartEvent {
+		detail: {
+			val: number;
+			name: string;
+		};
+	}
+
+	function handleTimerStart(event: TimerStartEvent) {
 		dispatch('start', { timer: event.detail.val, name: event.detail.name });
 		console.log('handleTimerStart');
 	}
