@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatTimeLogline } from '$lib/utils';
+	import { formatTimeLogLine } from '$lib/utils';
 	import { fade } from 'svelte/transition';
 	import { createEventDispatcher } from 'svelte';
 	import { TIMER_TYPES } from '$lib/constants';
@@ -10,7 +10,7 @@
 	export let finish: Date;
 	export let name: string;
 	export let rawView: boolean;
-	export let toplog: boolean = false;
+	export let topLog: boolean = false;
 
 	function formatTs(time: Date) {
 		let minutes = time.getHours().toString().padStart(2, '0');
@@ -32,7 +32,7 @@
 	}
 </script>
 
-<snap class:toplog class="logline" class:rest>
+<snap class:topLog class="logline" class:rest>
 	<snap class="time work">{startClock}</snap>
 	<snap>
 		{#if rest}
@@ -41,8 +41,8 @@
 			Active for
 		{/if}
 	</snap>
-	<snap class="duration">{formatTimeLogline(duration)}</snap>
-	{#if rawView && !toplog}
+	<snap class="duration">{formatTimeLogLine(duration)}</snap>
+	{#if rawView && !topLog}
 		<button
 			transition:fade={{ duration: 100 }}
 			class="mini"
@@ -106,15 +106,6 @@
 			color: black;
 		}
 	}
-	/* .rest.toplog {
-		animation: greenOne;
-		animation-duration: 1s;
-	}
-
-	.toplog {
-		animation: blackOne;
-		animation-duration: 1s;
-	} */
 
 	.mini {
 		border: none;

@@ -3,7 +3,7 @@
 	import { TimerState } from '$lib/types';
 	import { base } from '$app/paths';
 
-	const faviconStoped = base + '/tea.png';
+	const faviconStopped = base + '/tea.png';
 	const faviconRunning = base + '/clock_red.png';
 	const faviconWaitingForStop = base + '/clock_yellow.png';
 
@@ -15,7 +15,7 @@
 		if (faviconElement !== null) {
 			switch (icon) {
 				case TimerState.STOPPED:
-					faviconElement.href = faviconStoped;
+					faviconElement.href = faviconStopped;
 					break;
 				case TimerState.RUNNING:
 					faviconElement.href = faviconRunning;
@@ -24,7 +24,7 @@
 					faviconElement.href = faviconWaitingForStop;
 					break;
 				default:
-					faviconElement.href = faviconStoped;
+					faviconElement.href = faviconStopped;
 			}
 		}
 	}

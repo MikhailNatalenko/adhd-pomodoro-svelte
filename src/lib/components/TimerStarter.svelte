@@ -44,12 +44,12 @@
 			background-color: var(--hover-button-bg-color);
 		}
 		to {
-			background-color: var(--choosen-bg-color);
+			background-color: var(--chosen-bg-color);
 		}
 	}
 
 	.pressed {
-		background-color: var(--choosen-bg-color);
+		background-color: var(--chosen-bg-color);
 		animation-name: example;
 		animation-duration: 0.4s;
 	}

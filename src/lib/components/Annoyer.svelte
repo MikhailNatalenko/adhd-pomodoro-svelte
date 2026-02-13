@@ -32,7 +32,7 @@
 					clearInterval(intervalId);
 				}
 			},
-			getParam(debugFlag).afterClockIntervaltS * 1000
+			getParam(debugFlag).afterClockIntervalS * 1000
 		);
 
 		timeoutId = setTimeout(

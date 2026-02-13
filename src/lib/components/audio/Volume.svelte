@@ -20,25 +20,18 @@
 		$volume = 0;
 	}
 
-	function volumemax() {
+	function volumeMax() {
 		$volume = 100;
 	}
 </script>
 
 <label>
 	<div class="container">
-		<button on:click={mute} class="leftbutton"
-			><img src="{base}/volume_mute.svg" alt="Mute icon" />
+		<button on:click={mute} class="leftbutton"><img src="{base}/volume_mute.svg" alt="Mute icon" /> </button>
+		<input class="slider bar" type="range" bind:value={volumeBar} min="0" max="100" on:mouseup={handleMouseUp} />
+		<button on:click={volumeMax}>
+			<img src="{base}/volume_up.svg" alt="Volume max icon" />
 		</button>
-		<input
-			class="slider bar"
-			type="range"
-			bind:value={volumeBar}
-			min="0"
-			max="100"
-			on:mouseup={handleMouseUp}
-		/>
-		<button on:click={volumemax}><img src="{base}/volume_up.svg" alt="Volume max icon" /></button>
 	</div>
 </label>
 

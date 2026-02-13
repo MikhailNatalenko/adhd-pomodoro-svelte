@@ -7,12 +7,7 @@ export class PreciseTimer {
 	onSec = (n: number) => {};
 	onAlarm = () => {};
 
-	constructor(
-		duration: number,
-		onSec: (n: number) => void,
-		onAlarm: () => void,
-		smallIntervalMs = 300
-	) {
+	constructor(duration: number, onSec: (n: number) => void, onAlarm: () => void, smallIntervalMs = 300) {
 		this.duration = duration;
 		this.remain = duration;
 
@@ -22,7 +17,8 @@ export class PreciseTimer {
 			this.start = Date.now();
 
 			this.intervalId = setInterval(() => {
-				let remainingTime = this.duration - Math.ceil((Date.now() - this.start) / 1000);
+				const elapsed = Math.ceil((Date.now() - this.start) / 1000);
+				let remainingTime = this.duration - elapsed;
 
 				if (remainingTime != this.remain) {
 					onSec(this.remain);

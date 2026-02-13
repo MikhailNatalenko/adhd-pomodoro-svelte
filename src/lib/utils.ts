@@ -16,7 +16,7 @@ export function formatTimeClock(time: number) {
 }
 
 /// seconds -> 00 min 00 sec
-export function formatTimeLogline(time: number) {
+export function formatTimeLogLine(time: number) {
 	let minutes = Math.floor(time / 60);
 	let seconds = Math.floor(time % 60);
 

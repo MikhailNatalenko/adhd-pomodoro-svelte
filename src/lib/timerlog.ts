@@ -198,7 +198,7 @@ export class TimerList {
 		return this;
 	}
 
-	addDursec(addDursecS: number): TimerList {
+	addDurSec(addDursecS: number): TimerList {
 		this.additionalS += addDursecS;
 		return this;
 	}

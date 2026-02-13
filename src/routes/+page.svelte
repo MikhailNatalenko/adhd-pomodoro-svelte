@@ -83,7 +83,7 @@
 		--delete-background-color: rgba(114, 42, 42, 0.726);
 		--disabled-bg-color: #bfb6b4;
 		--disabled-color: darkslategrey;
-		--choosen-bg-color: burlywood;
+		--chosen-bg-color: burlywood;
 		--hover-bg-color: #554242;
 		--slider-color: #d3d3d3;
 		--logline-time-color: #c0c0c0;
@@ -101,7 +101,7 @@
 		--delete-background-color: rgba(103, 39, 39, 0.726);
 		--disabled-bg-color: #363333;
 		--disabled-color: rgb(24, 24, 24);
-		--choosen-bg-color: #d99bc8;
+		--chosen-bg-color: #d99bc8;
 		--hover-bg-color: #554242;
 		--slider-color: #4d4d4c;
 		--logline-time-color: #4d4d4c;

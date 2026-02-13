@@ -9,7 +9,12 @@
 	let innerPlayer = function () {};
 
 	/**
-	 * @type {{ decodeAudioData: (arg0: ArrayBuffer) => any; createBufferSource: () => any; createGain: () => any; destination: any; }}
+	 * @type {{
+	 *   decodeAudioData: (arg0: ArrayBuffer) => any;
+	 *   createBufferSource: () => any;
+	 *   createGain: () => any;
+	 *   destination: any;
+	 * }}
 	 */
 	let audioContext;
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Logline from '$lib/components/Logline.svelte';
+	import LogLine from '$lib/components/LogLine.svelte';
 	import type { Timer } from '$lib/types';
 	import { formatTimeHHMMSS } from '$lib/utils';
 	import { pomApp, rawView, totalTime } from '$lib/stores/pomodoroStore';
@@ -15,27 +15,42 @@
 </script>
 
 <div>
-	<button on:click={() => pomApp.update((app) => app.clearLogs())} class="clear">Clear logs</button>
+	<button on:click={() => pomApp.update((app) => app.clearLogs())} class="clear"> Clear logs </button>
 	<span>Active time: </span><span> {formatTimeHHMMSS($totalTime)}</span>
 	<input type="checkbox" id="edit" name="edit" bind:checked={$rawView} />
 	<label for="edit">Edit</label>
-	<button on:click={() => pomApp.update((app) => { app.timerHistory.addDursec(5 * 60); return app; })}> +5 min </button>
-	<button on:click={() => pomApp.update((app) => { app.timerHistory.addDursec(-5 * 60); return app; })}> -5 min </button>
-	<!-- <button on:click={() => pomApp.update((app) => { app.timerHistory.glueGaps(); return app; })} class="save">Save gaps</button> -->
+	<button
+		on:click={() =>
+			pomApp.update((app) => {
+				app.timerHistory.addDurSec(5 * 60);
+				return app;
+			})}
+	>
+		+5 min
+	</button>
+	<button
+		on:click={() =>
+			pomApp.update((app) => {
+				app.timerHistory.addDurSec(-5 * 60);
+				return app;
+			})}
+	>
+		-5 min
+	</button>
 </div>
 
 <div class="logs">
 	{#if $pomApp.active}
-		<Logline {...$pomApp.active} rawView={$rawView} toplog={true} /><br />
+		<LogLine {...$pomApp.active} rawView={$rawView} topLog={true} /><br />
 		<!-- on:change={(event)=>changeLineType(event.detail)}  -->
 		<!-- on:remove={(event)=>deleteLine(event.detail)}/> -->
 	{/if}
 
 	{#each [...normalized].reverse() as log (log.start)}
-		<Logline
+		<LogLine
 			{...log}
 			rawView={$rawView}
-			toplog={false}
+			topLog={false}
 			on:change={(event) => pomApp.update((app) => app.changeLineType(event.detail))}
 			on:remove={(event) => pomApp.update((app) => app.remove(event.detail))}
 		/>
