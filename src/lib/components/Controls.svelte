@@ -21,8 +21,6 @@
 		console.log('handleTimerStart');
 	}
 
-	export let active = true;
-
 	export function clear() {
 		childComponents.forEach((element) => {
 			if (element) element.reset();

@@ -81,7 +81,6 @@
 
 <Controls
 	bind:this={controlsComponent}
-	active={$timerState === TimerState.STOPPED}
 	on:start={onStartTimer}
 	on:stop={() => handleStop(EmitTimer.DO_NOT_EMIT)}
 >
