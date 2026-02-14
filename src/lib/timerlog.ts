@@ -150,6 +150,10 @@ export class TimerList {
 			}
 		}
 		this.list.push(timer);
+
+		// Collapse consecutive timers of the same type
+		this.list = collapseTimers(this.list, 0); // gap=0 means merge if directly adjacent
+
 		return this;
 	}
 

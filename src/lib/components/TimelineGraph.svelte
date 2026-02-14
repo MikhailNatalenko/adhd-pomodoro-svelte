@@ -9,21 +9,21 @@
 	// Combine completed timers with active timer for display
 	$: allTimers = activeTimer ? [...timers, activeTimer] : timers;
 
-	// Fixed duration for empty timeline (2 hours in milliseconds)
-	const FIXED_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours
+	// Fixed duration for empty timeline (40 min in milliseconds)
+	const INITIAL_DURATION_MS = 40 * 60 * 1000; // 40 min
 
 	// Calculate total time span including active timer
 	// When empty, use 2-hour window starting from active timer start or current time
 	$: totalDuration = (() => {
 		if (allTimers.length === 0) {
-			return FIXED_DURATION_MS;
+			return INITIAL_DURATION_MS;
 		}
 
 		const calculatedDuration =
 			Math.max(...allTimers.map((t) => t.finish.getTime())) - Math.min(...allTimers.map((t) => t.start.getTime()));
 
 		// Use at least 2 hours, or actual duration if longer
-		return Math.max(calculatedDuration, FIXED_DURATION_MS);
+		return Math.max(calculatedDuration, INITIAL_DURATION_MS);
 	})();
 
 	$: earliestStart = (() => {
@@ -37,11 +37,11 @@
 		const ONE_HOUR_MS = 60 * 60 * 1000;
 
 		if (allTimers.length === 0) {
-			return Date.now() + FIXED_DURATION_MS;
+			return Date.now() + INITIAL_DURATION_MS;
 		}
 
 		const maxFinish = Math.max(...allTimers.map((t) => t.finish.getTime()));
-		let calculatedEnd = Math.max(maxFinish, earliestStart + FIXED_DURATION_MS);
+		let calculatedEnd = Math.max(maxFinish, earliestStart + INITIAL_DURATION_MS);
 
 		// If active timer exists and is approaching the end (within 10 minutes), extend by 1 hour
 		if (activeTimer) {
@@ -180,8 +180,11 @@
 				// Short rest (< 5 min) doesn't break the session, continue checking
 				continue;
 			} else {
-				// Significant rest or non-work timer breaks the session
-				break;
+				// Significant rest (5+ min) breaks the session
+				// Use hasSignificantRestBefore to verify
+				if (!isWorkTimer(prevTimer) && hasSignificantRestBefore(currentFirst, allTimers)) {
+					break;
+				}
 			}
 		}
 
