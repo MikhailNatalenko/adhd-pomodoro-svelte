@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Timer } from '$lib/types';
 	import { TIMER_TYPES } from '$lib/constants';
+	import { selectTimer } from '$lib/stores/selectedTimerStore';
 
 	export let timers: Timer[] = [];
 	export let activeTimer: Timer | null = null;
@@ -61,7 +62,11 @@
 			if (position >= 0 && position <= 100) {
 				lines.push({
 					position,
-					label: currentHour.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+					label: currentHour.toLocaleTimeString(undefined, {
+						hour: '2-digit',
+						minute: '2-digit',
+						hour12: false
+					})
 				});
 			}
 
@@ -129,9 +134,13 @@
 		return actualDurationMin > plannedDurationMin * 1.1;
 	}
 
-	// Format time for tooltip
+	// Format time for tooltip (uses browser locale settings)
 	function formatTime(date: Date): string {
-		return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+		return date.toLocaleTimeString(undefined, {
+			hour: '2-digit',
+			minute: '2-digit',
+			hour12: false // Force 24-hour format
+		});
 	}
 
 	// Format duration in minutes
@@ -179,9 +188,12 @@
 			{@const isOvertime = isOvertimeTimer(timer, timers)}
 			{@const widthPercent = parseFloat(style.width)}
 			{@const minWidth = !isWork && widthPercent < 0.5 ? '2px' : style.width}
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y-no-static-element-interactions -->
 			<div
 				class="timer-block {isWork ? (isOvertime ? 'overtime' : 'work') : 'rest'}"
-				style="left: {style.left}; width: {minWidth}; min-width: {!isWork ? '2px' : '0'};"
+				style="left: {style.left}; width: {minWidth}; min-width: {!isWork ? '2px' : '0'}; cursor: pointer;"
+				on:click={() => selectTimer(timer)}
 				title="{formatTime(timer.start)} - {formatTime(timer.finish)} ({formatDuration(timer)}){isOvertime
 					? ' ⚠️ Overtime'
 					: ''}"
@@ -314,6 +326,12 @@
 		height: 100%;
 		transition: opacity 0.2s;
 		z-index: 1;
+		cursor: pointer;
+	}
+
+	.timer-block:hover {
+		opacity: 1 !important;
+		filter: brightness(1.1);
 	}
 
 	.timer-block.work {

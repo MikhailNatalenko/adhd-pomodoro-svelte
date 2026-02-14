@@ -1,6 +1,7 @@
 <script lang="ts">
 	import LogLine from '$lib/components/LogLine.svelte';
 	import TimelineGraph from '$lib/components/TimelineGraph.svelte';
+	import TimerEditor from '$lib/components/TimerEditor.svelte';
 	import type { Timer } from '$lib/types';
 	import { formatTimeHHMMSS } from '$lib/utils';
 	import { pomApp, rawView, totalTime } from '$lib/stores/pomodoroStore';
@@ -14,6 +15,8 @@
 
 	$: normalized = normalize($pomApp, $rawView);
 </script>
+
+<TimerEditor />
 
 <div>
 	<button on:click={() => pomApp.update((app) => app.clearLogs())} class="clear"> Clear logs </button>
