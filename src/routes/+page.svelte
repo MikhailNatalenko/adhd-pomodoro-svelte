@@ -4,18 +4,50 @@
 
 	import type { TimerEvent } from '$lib/types';
 	import { pomApp, darkMode } from '$lib/stores/pomodoroStore';
-	import { onMount } from 'svelte';
+	import { timer } from '$lib/stores/timerStore';
+	import { onMount, onDestroy } from 'svelte';
 
 	let debug: boolean = false;
 	let currentTimer: number;
 	let loading = true;
+	let activeTimerInterval: ReturnType<typeof setInterval> | undefined;
 
+	// Update active timer finish time when timer is running
 	$: if ($pomApp && currentTimer !== undefined) {
 		pomApp.update((app) => {
 			app.updateActiveTimer();
 			return app;
 		});
 	}
+
+	// Update active timer finish time periodically whenever it exists
+	$: {
+		if ($pomApp?.active) {
+			if (!activeTimerInterval) {
+				console.log('Starting active timer interval');
+				activeTimerInterval = setInterval(() => {
+					pomApp.update((app) => {
+						if (app.active) {
+							app.active.finish = new Date();
+						}
+						return app;
+					});
+				}, 1000);
+			}
+		} else {
+			if (activeTimerInterval) {
+				console.log('Clearing active timer interval');
+				clearInterval(activeTimerInterval);
+				activeTimerInterval = undefined;
+			}
+		}
+	}
+
+	onDestroy(() => {
+		if (activeTimerInterval) {
+			clearInterval(activeTimerInterval);
+		}
+	});
 
 	function onTimer(event: TimerEvent) {
 		pomApp.update((app) => app.addTimer(event.detail));
@@ -31,6 +63,33 @@
 
 	onMount(() => {
 		console.log('get darkmode:', $darkMode);
+
+		// Auto-resume timer if there's an active timer from cookies
+		if ($pomApp?.active) {
+			const now = new Date();
+			const elapsed = (now.getTime() - $pomApp.active.start.getTime()) / 1000; // seconds
+			const planned = $pomApp.active.value * 60; // convert minutes to seconds
+			const remaining = Math.max(0, planned - elapsed);
+
+			console.log('Auto-resuming timer:', {
+				elapsed,
+				planned,
+				remaining,
+				timerType: $pomApp.active.name
+			});
+
+			// If there's still time remaining, start the timer
+			if (remaining > 0) {
+				const remainingMinutes = remaining / 60;
+				timer.start(remainingMinutes, $pomApp.active.name, debug);
+				console.log('Started timer with', remainingMinutes, 'minutes remaining');
+			} else {
+				// Timer expired, remove active timer
+				pomApp.update((app) => app.resetActive());
+				console.log('Timer expired, cleared active timer');
+			}
+		}
+
 		loading = false;
 	});
 

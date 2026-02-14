@@ -322,18 +322,50 @@
 			{@const style = getTimerStyle(timer)}
 			{@const isWork = isWorkTimer(timer)}
 			{@const isOvertime = isOvertimeTimer(timer, timers)}
+			{@const overtimeStart = isOvertime ? getOvertimeStart(timer, timers) : null}
 			{@const widthPercent = parseFloat(style.width)}
 			{@const minWidth = !isWork && widthPercent < 0.5 ? '2px' : style.width}
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<!-- svelte-ignore a11y-no-static-element-interactions -->
-			<div
-				class="timer-block {isWork ? (isOvertime ? 'overtime' : 'work') : 'rest'}"
-				style="left: {style.left}; width: {minWidth}; min-width: {!isWork ? '2px' : '0'}; cursor: pointer;"
-				on:click={() => selectTimer(timer)}
-				title="{formatTime(timer.start)} - {formatTime(timer.finish)} ({formatDuration(timer)}){isOvertime
-					? ' ⚠️ Overtime'
-					: ''}"
-			></div>
+
+			{#if isWork && overtimeStart && overtimeStart.getTime() > timer.start.getTime() && overtimeStart.getTime() < timer.finish.getTime()}
+				<!-- Split timer: normal part + overtime part -->
+				{@const normalDuration = overtimeStart.getTime() - timer.start.getTime()}
+				{@const totalDuration = timer.finish.getTime() - timer.start.getTime()}
+				{@const normalWidthPercent = (normalDuration / totalDuration) * widthPercent}
+				{@const overtimeWidthPercent = widthPercent - normalWidthPercent}
+
+				<!-- Normal work portion -->
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<!-- svelte-ignore a11y-no-static-element-interactions -->
+				<div
+					class="timer-block work"
+					style="left: {style.left}; width: {normalWidthPercent}%; cursor: pointer;"
+					on:click={() => selectTimer(timer)}
+					title="{formatTime(timer.start)} - {formatTime(overtimeStart)} (Normal)"
+				></div>
+
+				<!-- Overtime portion -->
+				{@const overtimeLeft = parseFloat(style.left) + normalWidthPercent}
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<!-- svelte-ignore a11y-no-static-element-interactions -->
+				<div
+					class="timer-block overtime"
+					style="left: {overtimeLeft}%; width: {overtimeWidthPercent}%; cursor: pointer;"
+					on:click={() => selectTimer(timer)}
+					title="{formatTime(overtimeStart)} - {formatTime(timer.finish)} ⚠️ Overtime"
+				></div>
+			{:else}
+				<!-- Single block (no overtime split needed) -->
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<!-- svelte-ignore a11y-no-static-element-interactions -->
+				<div
+					class="timer-block {isWork ? (isOvertime ? 'overtime' : 'work') : 'rest'}"
+					style="left: {style.left}; width: {minWidth}; min-width: {!isWork ? '2px' : '0'}; cursor: pointer;"
+					on:click={() => selectTimer(timer)}
+					title="{formatTime(timer.start)} - {formatTime(timer.finish)} ({formatDuration(timer)}){isOvertime
+						? ' ⚠️ Overtime'
+						: ''}"
+				></div>
+			{/if}
 		{/each}
 
 		<!-- Active timer block (with pulsing animation) -->
@@ -341,13 +373,40 @@
 			{@const style = getTimerStyle(activeTimer)}
 			{@const isWork = isWorkTimer(activeTimer)}
 			{@const isOvertime = isOvertimeTimer(activeTimer, allTimers)}
-			<div
-				class="timer-block active {isWork ? (isOvertime ? 'overtime' : 'work') : 'rest'}"
-				style="left: {style.left}; width: {style.width};"
-				title="Active: {formatTime(activeTimer.start)} - now ({formatDuration(activeTimer)}){isOvertime
-					? ' ⚠️ Overtime'
-					: ''}"
-			></div>
+			{@const overtimeStart = isOvertime ? getOvertimeStart(activeTimer, allTimers) : null}
+			{@const widthPercent = parseFloat(style.width)}
+
+			{#if isWork && overtimeStart && overtimeStart.getTime() > activeTimer.start.getTime() && overtimeStart.getTime() < activeTimer.finish.getTime()}
+				<!-- Split active timer: normal part + overtime part -->
+				{@const normalDuration = overtimeStart.getTime() - activeTimer.start.getTime()}
+				{@const totalDuration = activeTimer.finish.getTime() - activeTimer.start.getTime()}
+				{@const normalWidthPercent = (normalDuration / totalDuration) * widthPercent}
+				{@const overtimeWidthPercent = widthPercent - normalWidthPercent}
+
+				<!-- Normal work portion (active) -->
+				<div
+					class="timer-block active work"
+					style="left: {style.left}; width: {normalWidthPercent}%;"
+					title="Active: {formatTime(activeTimer.start)} - {formatTime(overtimeStart)} (Normal)"
+				></div>
+
+				<!-- Overtime portion (active) -->
+				{@const overtimeLeft = parseFloat(style.left) + normalWidthPercent}
+				<div
+					class="timer-block active overtime"
+					style="left: {overtimeLeft}%; width: {overtimeWidthPercent}%;"
+					title="Active: {formatTime(overtimeStart)} - now ⚠️ Overtime"
+				></div>
+			{:else}
+				<!-- Single active block (no overtime split) -->
+				<div
+					class="timer-block active {isWork ? (isOvertime ? 'overtime' : 'work') : 'rest'}"
+					style="left: {style.left}; width: {style.width};"
+					title="Active: {formatTime(activeTimer.start)} - now ({formatDuration(activeTimer)}){isOvertime
+						? ' ⚠️ Overtime'
+						: ''}"
+				></div>
+			{/if}
 		{/if}
 	</div>
 </div>

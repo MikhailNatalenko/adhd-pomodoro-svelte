@@ -3,6 +3,7 @@ import { browser } from '$app/environment';
 import Cookies from 'js-cookie';
 import { PomApp } from '$lib/pom_app';
 import { parseTimerList } from '$lib/timerlog';
+import { Timer } from '$lib/types';
 import { persistentStore } from './persistentStore';
 
 /**
@@ -17,6 +18,34 @@ function createPomAppStore(): Writable<PomApp> {
 		if (logs) {
 			initialApp.timerHistory = parseTimerList(logs);
 		}
+
+		// Load active timer if exists
+		const activeTimer = Cookies.get('activeTimer');
+		if (activeTimer) {
+			try {
+				const parsed = JSON.parse(activeTimer);
+				const startTime = new Date(parsed.start);
+				const now = new Date();
+
+				// Only restore if timer was started recently (within last hour)
+				// This prevents restoring very old timers
+				const hoursSinceStart = (now.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+				if (hoursSinceStart < 1) {
+					initialApp.active = new Timer(
+						parsed.value,
+						parsed.name,
+						startTime,
+						now // Set finish to current time for active timer
+					);
+					console.log('Loaded active timer from cookies:', initialApp.active);
+				} else {
+					console.log('Active timer too old, not restoring');
+					Cookies.remove('activeTimer');
+				}
+			} catch (e) {
+				console.error('Failed to parse active timer:', e);
+			}
+		}
 	}
 
 	const store = writable<PomApp>(initialApp);
@@ -26,6 +55,22 @@ function createPomAppStore(): Writable<PomApp> {
 		store.subscribe((app) => {
 			const serialized = app.timerHistory.serialize();
 			Cookies.set('logs', serialized, { expires: 31 });
+
+			// Save active timer
+			if (app.active) {
+				const activeData = {
+					name: app.active.name,
+					start: app.active.start.getTime(),
+					finish: app.active.finish.getTime(),
+					value: app.active.value
+				};
+				Cookies.set('activeTimer', JSON.stringify(activeData), { expires: 31 });
+				console.log('Saved active timer:', app.active.name, 'start:', app.active.start, 'finish:', app.active.finish);
+			} else {
+				Cookies.remove('activeTimer');
+				console.log('Removed active timer (app.active is undefined)');
+			}
+
 			console.log('Saved pomApp to cookies');
 		});
 	}
