@@ -135,41 +135,127 @@
 		return timer.name === TIMER_TYPES.WORK;
 	}
 
-	// Check if there's a rest break before this timer
-	function hasRestBefore(timer: Timer, allTimers: Timer[]): boolean {
+	// Check if there's a significant rest break (5+ minutes) before this timer
+	function hasSignificantRestBefore(timer: Timer, allTimers: Timer[]): boolean {
 		const timerIndex = allTimers.findIndex((t) => t.start.getTime() === timer.start.getTime());
 		if (timerIndex <= 0) return true; // First timer or not found
 
 		const previousTimer = allTimers[timerIndex - 1];
 
 		// Check if previous timer is rest
-		if (!isWorkTimer(previousTimer)) return true;
+		if (!isWorkTimer(previousTimer)) {
+			// Check if rest was 5+ minutes
+			const restDuration = previousTimer.durationS() / 60;
+			return restDuration >= 5;
+		}
 
 		// Check if there's a gap (rest) between timers
 		const gap = timer.start.getTime() - previousTimer.finish.getTime();
 		const gapMinutes = gap / (1000 * 60);
 
-		// If gap is less than 1 minute, consider it consecutive work
-		return gapMinutes >= 1;
+		// If gap is 5+ minutes, it's a significant rest
+		return gapMinutes >= 5;
 	}
 
-	// Determine if work timer is overtime (actual duration exceeds planned value OR consecutive work)
-	function isOvertimeTimer(timer: Timer, allTimers: Timer[]): boolean {
-		if (!isWorkTimer(timer)) return false;
+	// Get all consecutive work timers starting from this one going backwards
+	function getConsecutiveWorkSession(timer: Timer, allTimers: Timer[]): Timer[] {
+		if (!isWorkTimer(timer)) return [];
 
-		// Check for consecutive work without rest
-		if (!hasRestBefore(timer, allTimers)) {
-			return true; // Overtime: no rest before this work session
+		const session: Timer[] = [timer];
+		const timerIndex = allTimers.findIndex((t) => t.start.getTime() === timer.start.getTime());
+
+		// Go backwards to find all consecutive work timers
+		for (let i = timerIndex - 1; i >= 0; i--) {
+			const prevTimer = allTimers[i];
+			const currentFirst = session[0];
+
+			// Check gap between previous timer and first in session
+			const gap = currentFirst.start.getTime() - prevTimer.finish.getTime();
+			const gapMinutes = gap / (1000 * 60);
+
+			// If it's work and gap is less than 5 minutes, add to session
+			if (isWorkTimer(prevTimer) && gapMinutes < 5) {
+				session.unshift(prevTimer);
+			} else if (!isWorkTimer(prevTimer) && prevTimer.durationS() / 60 < 5) {
+				// Short rest (< 5 min) doesn't break the session, continue checking
+				continue;
+			} else {
+				// Significant rest or non-work timer breaks the session
+				break;
+			}
 		}
 
-		// Check for duration exceeding planned value
+		return session;
+	}
+
+	// Determine if work timer shows overtime
+	// New logic:
+	// 1) For single timer: overtime starts 2 min after planned time (alarm)
+	// 2) For consecutive work: merge sessions, overtime if total exceeds sum of planned + 25 min
+	// 3) Only 5+ min rest resets overtime
+	function isOvertimeTimer(timer: Timer, allTimers: Timer[]): boolean {
+		if (!isWorkTimer(timer)) return false;
 		if (!timer.value || timer.value === 0) return false; // No planned duration
 
-		const actualDurationMin = timer.durationS() / 60;
-		const plannedDurationMin = timer.value;
+		const OVERTIME_GRACE_PERIOD_MIN = 2; // Overtime starts 2 min after alarm
+		const CONSECUTIVE_OVERTIME_THRESHOLD_MIN = 25; // For consecutive work sessions
 
-		// Overtime if actual duration exceeds planned by more than 10%
-		return actualDurationMin > plannedDurationMin * 1.1;
+		// Get consecutive work session
+		const session = getConsecutiveWorkSession(timer, allTimers);
+
+		if (session.length === 1) {
+			// Single timer: overtime if actual > planned + 2 min
+			const actualDurationMin = timer.durationS() / 60;
+			const plannedDurationMin = timer.value;
+			return actualDurationMin > plannedDurationMin + OVERTIME_GRACE_PERIOD_MIN;
+		} else {
+			// Consecutive work: calculate total planned and actual time
+			const totalPlannedMin = session.reduce((sum, t) => sum + (t.value || 0), 0);
+			const totalActualMin = session.reduce((sum, t) => sum + t.durationS() / 60, 0);
+
+			// Overtime if total actual exceeds total planned + 25 min
+			return totalActualMin > totalPlannedMin + CONSECUTIVE_OVERTIME_THRESHOLD_MIN;
+		}
+	}
+
+	// Get the overtime portion of a timer (for visual display)
+	// Returns the start time of overtime within this timer, or null if no overtime
+	function getOvertimeStart(timer: Timer, allTimers: Timer[]): Date | null {
+		if (!isOvertimeTimer(timer, allTimers)) return null;
+		if (!timer.value) return null;
+
+		const OVERTIME_GRACE_PERIOD_MIN = 2;
+		const CONSECUTIVE_OVERTIME_THRESHOLD_MIN = 25;
+
+		const session = getConsecutiveWorkSession(timer, allTimers);
+
+		if (session.length === 1) {
+			// Single timer: overtime starts at planned + 2 min
+			const overtimeStartMs = timer.start.getTime() + (timer.value + OVERTIME_GRACE_PERIOD_MIN) * 60 * 1000;
+			return new Date(overtimeStartMs);
+		} else {
+			// Consecutive work: find where overtime starts in the session
+			const totalPlannedMin = session.reduce((sum, t) => sum + (t.value || 0), 0);
+			const overtimeThresholdMin = totalPlannedMin + CONSECUTIVE_OVERTIME_THRESHOLD_MIN;
+
+			// Calculate cumulative time to find which timer contains the overtime start
+			let cumulativeMin = 0;
+			for (const t of session) {
+				const timerDurationMin = t.durationS() / 60;
+				const nextCumulative = cumulativeMin + timerDurationMin;
+
+				if (nextCumulative > overtimeThresholdMin) {
+					// Overtime starts in this timer
+					const overtimeOffsetMin = overtimeThresholdMin - cumulativeMin;
+					const overtimeStartMs = t.start.getTime() + overtimeOffsetMin * 60 * 1000;
+					return new Date(overtimeStartMs);
+				}
+
+				cumulativeMin = nextCumulative;
+			}
+		}
+
+		return null;
 	}
 
 	// Format time for tooltip (uses browser locale settings)
@@ -196,7 +282,7 @@
 				<span class="legend-color work"></span>
 				<span>Work</span>
 			</span>
-			<span class="legend-item">
+			<span class="legend-item" title="Overtime: 2+ min after alarm, or 25+ min for consecutive work">
 				<span class="legend-color overtime"></span>
 				<span>Overtime</span>
 			</span>
