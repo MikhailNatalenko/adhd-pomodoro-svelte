@@ -76,6 +76,29 @@
 		return lines;
 	})();
 
+	// Calculate future time overlay (time that hasn't happened yet)
+	$: futureTimeOverlay = (() => {
+		const now = Date.now();
+
+		// If latest finish is in the future, show overlay
+		if (latestFinish > now) {
+			const futureStart = Math.max(earliestStart, now);
+			const futureOffset = futureStart - earliestStart;
+			const futureDuration = latestFinish - futureStart;
+
+			const left = (futureOffset / totalDuration) * 100;
+			const width = (futureDuration / totalDuration) * 100;
+
+			return {
+				left: `${left}%`,
+				width: `${width}%`,
+				visible: width > 0
+			};
+		}
+
+		return { left: '0%', width: '0%', visible: false };
+	})();
+
 	// Convert timer to position and width percentages
 	function getTimerStyle(timer: Timer) {
 		if (totalDuration === 0) return { left: '0%', width: '0%' };
@@ -173,6 +196,15 @@
 		<!-- Start and end time labels -->
 		<div class="time-label start">{formatTime(new Date(earliestStart))}</div>
 		<div class="time-label end">{formatTime(new Date(latestFinish))}</div>
+
+		<!-- Future time overlay (time that hasn't happened yet) -->
+		{#if futureTimeOverlay.visible}
+			<div
+				class="future-overlay"
+				style="left: {futureTimeOverlay.left}; width: {futureTimeOverlay.width};"
+				title="Future time"
+			></div>
+		{/if}
 
 		<!-- Grid lines -->
 		{#each gridLines as line}
@@ -297,6 +329,15 @@
 
 	.time-label.end {
 		right: 0;
+	}
+
+	.future-overlay {
+		position: absolute;
+		top: 0;
+		height: 100%;
+		background-color: rgba(128, 128, 128, 0.15);
+		pointer-events: none;
+		z-index: 0;
 	}
 
 	.grid-line {
