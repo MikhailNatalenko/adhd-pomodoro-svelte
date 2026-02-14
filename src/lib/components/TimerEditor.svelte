@@ -14,10 +14,11 @@
 		const finish = $selectedTimer.finish;
 
 		startDate = start.toISOString().split('T')[0];
-		startTime = start.toTimeString().slice(0, 5);
+		// Format time as HH:MM in 24-hour format for input type="time"
+		startTime = `${String(start.getHours()).padStart(2, '0')}:${String(start.getMinutes()).padStart(2, '0')}`;
 
 		finishDate = finish.toISOString().split('T')[0];
-		finishTime = finish.toTimeString().slice(0, 5);
+		finishTime = `${String(finish.getHours()).padStart(2, '0')}:${String(finish.getMinutes()).padStart(2, '0')}`;
 	}
 
 	// Calculate duration in minutes
@@ -106,7 +107,7 @@
 
 				<div class="form-group">
 					<label for="start-time">Start Time</label>
-					<input id="start-time" type="time" bind:value={startTime} />
+					<input id="start-time" type="time" step="60" bind:value={startTime} />
 				</div>
 
 				<div class="form-group">
@@ -116,7 +117,7 @@
 
 				<div class="form-group">
 					<label for="finish-time">Finish Time</label>
-					<input id="finish-time" type="time" bind:value={finishTime} />
+					<input id="finish-time" type="time" step="60" bind:value={finishTime} />
 				</div>
 			</div>
 

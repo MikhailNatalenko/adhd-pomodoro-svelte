@@ -34,12 +34,27 @@
 	})();
 
 	$: latestFinish = (() => {
+		const ONE_HOUR_MS = 60 * 60 * 1000;
+
 		if (allTimers.length === 0) {
 			return Date.now() + FIXED_DURATION_MS;
 		}
+
 		const maxFinish = Math.max(...allTimers.map((t) => t.finish.getTime()));
-		// Ensure at least 2 hours from earliest start
-		return Math.max(maxFinish, earliestStart + FIXED_DURATION_MS);
+		let calculatedEnd = Math.max(maxFinish, earliestStart + FIXED_DURATION_MS);
+
+		// If active timer exists and is approaching the end (within 10 minutes), extend by 1 hour
+		if (activeTimer) {
+			const now = Date.now();
+			const timeUntilEnd = calculatedEnd - now;
+			const TEN_MINUTES_MS = 10 * 60 * 1000;
+
+			if (timeUntilEnd < TEN_MINUTES_MS && timeUntilEnd > 0) {
+				calculatedEnd = calculatedEnd + ONE_HOUR_MS;
+			}
+		}
+
+		return calculatedEnd;
 	})();
 
 	// Generate grid lines (every hour)
@@ -175,7 +190,7 @@
 
 <div class="timeline-container">
 	<div class="timeline-header">
-		<span class="timeline-title">Timer Timeline</span>
+		<span class="timeline-title">Timeline</span>
 		<div class="legend">
 			<span class="legend-item">
 				<span class="legend-color work"></span>
