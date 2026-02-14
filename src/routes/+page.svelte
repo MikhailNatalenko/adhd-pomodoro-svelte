@@ -12,7 +12,7 @@
 
 	$: if ($pomApp && currentTimer !== undefined) {
 		pomApp.update((app) => {
-			app.setActiveDur(currentTimer);
+			app.updateActiveTimer();
 			return app;
 		});
 	}

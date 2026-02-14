@@ -12,19 +12,12 @@
 	// Fixed duration for empty timeline (40 min in milliseconds)
 	const INITIAL_DURATION_MS = 40 * 60 * 1000; // 40 min
 
-	// Calculate total time span including active timer
-	// When empty, use 2-hour window starting from active timer start or current time
-	$: totalDuration = (() => {
-		if (allTimers.length === 0) {
-			return INITIAL_DURATION_MS;
-		}
+	// Track how many hours we've extended the timeline
+	let extensionHours = 0;
+	let lastExtendedEnd = 0; // Track when we last extended to prevent repeated extensions
 
-		const calculatedDuration =
-			Math.max(...allTimers.map((t) => t.finish.getTime())) - Math.min(...allTimers.map((t) => t.start.getTime()));
-
-		// Use at least 2 hours, or actual duration if longer
-		return Math.max(calculatedDuration, INITIAL_DURATION_MS);
-	})();
+	// Calculate total time span including active timer and extensions
+	$: totalDuration = latestFinish - earliestStart;
 
 	$: earliestStart = (() => {
 		if (allTimers.length === 0) {
@@ -43,14 +36,21 @@
 		const maxFinish = Math.max(...allTimers.map((t) => t.finish.getTime()));
 		let calculatedEnd = Math.max(maxFinish, earliestStart + INITIAL_DURATION_MS);
 
+		// Add accumulated extensions
+		calculatedEnd += extensionHours * ONE_HOUR_MS;
+
 		// If active timer exists and is approaching the end (within 10 minutes), extend by 1 hour
-		if (activeTimer) {
-			const now = Date.now();
-			const timeUntilEnd = calculatedEnd - now;
+		// Only extend if we haven't already extended for this calculatedEnd value
+		if (activeTimer && calculatedEnd !== lastExtendedEnd) {
+			const activeTimerEnd = activeTimer.finish.getTime();
+			const timeUntilEnd = calculatedEnd - activeTimerEnd;
 			const TEN_MINUTES_MS = 10 * 60 * 1000;
 
-			if (timeUntilEnd < TEN_MINUTES_MS && timeUntilEnd > 0) {
-				calculatedEnd = calculatedEnd + ONE_HOUR_MS;
+			if (timeUntilEnd < TEN_MINUTES_MS) {
+				extensionHours++;
+				calculatedEnd += ONE_HOUR_MS;
+				lastExtendedEnd = calculatedEnd;
+				console.log('Extended timeline, total extensions:', extensionHours, 'new end:', new Date(calculatedEnd));
 			}
 		}
 

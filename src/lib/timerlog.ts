@@ -119,12 +119,6 @@ export class TimerList {
 		this.list = fillEmptyGaps(list, TIMER_TYPES.REST);
 	}
 
-	normalize() {
-		var timers = fillEmptyGaps(this.list, TIMER_TYPES.REST);
-		timers = collapseTimers(timers);
-		return timers;
-	}
-
 	serialize(): string {
 		let cached: CachedLog[] = [];
 		this.list.forEach((element) => {
@@ -135,34 +129,21 @@ export class TimerList {
 			});
 		});
 
-		console.log('Serializing logs:', JSON.stringify(cached));
 		return JSON.stringify(cached);
 	}
 
-	addTimer(timer: Timer): TimerList {
-		if (this.list.length > 0) {
-			//TODO: dirty hack. Propably I should fix it later
-			if (this.list[this.list.length - 1].start == timer.start) {
-				this.list[this.list.length - 1].finish = timer.finish;
-				this.list = this.list;
-				return this;
-			}
-		}
-		this.list.push(timer);
-
-		// Collapse consecutive timers of the same type
-		this.list = collapseTimers(this.list, 0); // gap=0 means merge if directly adjacent
-
-		return this;
+	/**
+	 * Private method to normalize the timer list
+	 * Fills empty gaps with rest timers and collapses consecutive same-type timers
+	 */
+	private _normalize(): void {
+		this.list = fillEmptyGaps(this.list, TIMER_TYPES.REST);
+		this.list = collapseTimers(this.list, 0);
 	}
 
-	changeLineType(start: Date): TimerList {
-		this.list.forEach((timer) => {
-			if (timer.start === start) {
-				timer.name = timer.name === TIMER_TYPES.REST ? TIMER_TYPES.WORK : TIMER_TYPES.REST;
-			}
-		});
-
+	addTimer(timer: Timer): TimerList {
+		this.list.push(timer);
+		this._normalize();
 		return this;
 	}
 
@@ -175,6 +156,7 @@ export class TimerList {
 				++i;
 			}
 		}
+		this._normalize();
 	}
 
 	total() {
@@ -199,14 +181,5 @@ export class TimerList {
 		}
 
 		return this;
-	}
-
-	addDurSec(addDursecS: number): TimerList {
-		this.additionalS += addDursecS;
-		return this;
-	}
-
-	getAdditional(): number {
-		return this.additionalS;
 	}
 }

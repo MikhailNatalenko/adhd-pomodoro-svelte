@@ -10,12 +10,8 @@
 	var normalized: Timer[] = [];
 	let showGraph = true; // Default to graph view
 
-	function normalize(app: typeof $pomApp) {
-		if (!app?.timerHistory) return [];
-		return app.timerHistory.normalize();
-	}
-
-	$: normalized = normalize($pomApp);
+	// List is already normalized in addTimer, so just use it directly
+	$: normalized = $pomApp?.timerHistory?.list || [];
 </script>
 
 <TimerEditor />
@@ -37,17 +33,10 @@
 			<div class="logs">
 				{#if $pomApp.active}
 					<LogLine {...$pomApp.active} topLog={true} /><br />
-					<!-- on:change={(event)=>changeLineType(event.detail)}  -->
-					<!-- on:remove={(event)=>deleteLine(event.detail)}/> -->
 				{/if}
 
 				{#each [...normalized].reverse() as log (log.start)}
-					<LogLine
-						{...log}
-						topLog={false}
-						on:change={(event) => pomApp.update((app) => app.changeLineType(event.detail))}
-						on:remove={(event) => pomApp.update((app) => app.remove(event.detail))}
-					/>
+					<LogLine {...log} topLog={false} on:remove={(event) => pomApp.update((app) => app.remove(event.detail))} />
 					<br />
 				{/each}
 			</div>

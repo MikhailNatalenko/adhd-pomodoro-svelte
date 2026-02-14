@@ -4,12 +4,12 @@ export class PreciseTimer {
 	start = 0;
 	remain = 0;
 
-	onSec = (n: number) => {};
-	onAlarm = () => {};
+	onSec = (n: number) => { };
+	onAlarm = () => { };
 
 	constructor(duration: number, onSec: (n: number) => void, onAlarm: () => void, smallIntervalMs = 300) {
 		this.duration = duration;
-		this.remain = duration;
+		this.remain = duration - 1; // Start at duration-1 for immediate display
 
 		if (duration > 0) {
 			this.onSec = onSec;

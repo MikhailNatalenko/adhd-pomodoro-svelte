@@ -11,7 +11,7 @@ export class PomApp {
 	}
 
 	////
-	//  history modification
+	//  timer list modification
 	///
 	addTimer(timer: Timer): PomApp {
 		this.active = undefined;
@@ -24,18 +24,13 @@ export class PomApp {
 		return this;
 	}
 
-	changeLineType(start: Date): PomApp {
-		this.timerHistory.changeLineType(start);
-		return this;
-	}
-
 	clearLogs(): PomApp {
 		this.timerHistory = new TimerList([]);
 		return this;
 	}
 
 	////////
-	/// current time modification
+	/// current timer modification
 	/////
 
 	resetActive(): PomApp {
@@ -43,10 +38,10 @@ export class PomApp {
 		return this;
 	}
 
-	setActiveDur(_duration: number): PomApp {
+	updateActiveTimer(): PomApp {
 		if (this.active) {
+			// Update finish to current time to show active timer progress on timeline
 			this.active.finish = new Date();
-			return this;
 		}
 		return this;
 	}

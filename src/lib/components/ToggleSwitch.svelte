@@ -47,7 +47,7 @@
 
 	.tab:hover:not(.active) {
 		background-color: rgba(76, 175, 80, 0.1);
-		color: var(--work-buttons, #4caf50);
+		color: var(--work-buttons, #af544c);
 	}
 
 	.tab.active {
