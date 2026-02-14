@@ -10,5 +10,3 @@ npm run dev # to build and run locally
 npm run build
 npm run deploy # this is how I deploy it to gh pages
 ```
-
-[todo.md]
