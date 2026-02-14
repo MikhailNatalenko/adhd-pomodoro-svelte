@@ -6,7 +6,6 @@
 	const dispatch = createEventDispatcher();
 
 	export let debugFlag: boolean;
-
 	export let active: boolean = true;
 
 	$: runTimer(active);

@@ -47,14 +47,6 @@ export const darkMode = persistentStore<boolean>('darkmode', false, {
 	deserialize: (value) => value === 'true'
 });
 
-/**
- * Raw view mode for logs (edit mode)
- */
-export const rawView = persistentStore<boolean>('raw_view', false, {
-	storage: 'cookies',
-	serialize: (value) => value.toString(),
-	deserialize: (value) => value === 'true'
-});
 
 /**
  * Derived store for total active time

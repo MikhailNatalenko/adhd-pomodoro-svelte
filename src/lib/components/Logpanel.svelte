@@ -5,56 +5,55 @@
 	import ToggleSwitch from '$lib/components/ToggleSwitch.svelte';
 	import type { Timer } from '$lib/types';
 	import { formatTimeHHMMSS } from '$lib/utils';
-	import { pomApp, rawView, totalTime } from '$lib/stores/pomodoroStore';
+	import { pomApp, totalTime } from '$lib/stores/pomodoroStore';
 
 	var normalized: Timer[] = [];
 	let showGraph = true; // Default to graph view
 
-	function normalize(app: typeof $pomApp, raw: boolean) {
+	function normalize(app: typeof $pomApp) {
 		if (!app?.timerHistory) return [];
-		return app.timerHistory.normalize(!raw);
+		return app.timerHistory.normalize();
 	}
 
-	$: normalized = normalize($pomApp, $rawView);
+	$: normalized = normalize($pomApp);
 </script>
 
 <TimerEditor />
 
 <div class="header">
-	<div class="header-left">
-		<button on:click={() => pomApp.update((app) => app.clearLogs())} class="clear"> Clear logs </button>
-		<span>Active time: </span><span> {formatTimeHHMMSS($totalTime)}</span>
-		<input type="checkbox" id="edit" name="edit" bind:checked={$rawView} />
-		<label for="edit">Edit</label>
-	</div>
-
-	<div class="header-right">
-		<ToggleSwitch bind:checked={showGraph} leftLabel="Logs" rightLabel="Graph" />
-	</div>
+	<button on:click={() => pomApp.update((app) => app.clearLogs())} class="clear"> Clear logs </button>
+	<span>Active time: </span><span> {formatTimeHHMMSS($totalTime)}</span>
 </div>
 
-{#if showGraph}
-	<TimelineGraph timers={normalized} activeTimer={$pomApp.active} />
-{:else}
-	<div class="logs">
-		{#if $pomApp.active}
-			<LogLine {...$pomApp.active} rawView={$rawView} topLog={true} /><br />
-			<!-- on:change={(event)=>changeLineType(event.detail)}  -->
-			<!-- on:remove={(event)=>deleteLine(event.detail)}/> -->
-		{/if}
-
-		{#each [...normalized].reverse() as log (log.start)}
-			<LogLine
-				{...log}
-				rawView={$rawView}
-				topLog={false}
-				on:change={(event) => pomApp.update((app) => app.changeLineType(event.detail))}
-				on:remove={(event) => pomApp.update((app) => app.remove(event.detail))}
-			/>
-			<br />
-		{/each}
+<div class="content-section">
+	<div class="tabs-header">
+		<ToggleSwitch bind:checked={showGraph} leftLabel="Logs" rightLabel="Graph" />
 	</div>
-{/if}
+
+	<div class="content-wrapper">
+		{#if showGraph}
+			<TimelineGraph timers={normalized} activeTimer={$pomApp.active} />
+		{:else}
+			<div class="logs">
+				{#if $pomApp.active}
+					<LogLine {...$pomApp.active} topLog={true} /><br />
+					<!-- on:change={(event)=>changeLineType(event.detail)}  -->
+					<!-- on:remove={(event)=>deleteLine(event.detail)}/> -->
+				{/if}
+
+				{#each [...normalized].reverse() as log (log.start)}
+					<LogLine
+						{...log}
+						topLog={false}
+						on:change={(event) => pomApp.update((app) => app.changeLineType(event.detail))}
+						on:remove={(event) => pomApp.update((app) => app.remove(event.detail))}
+					/>
+					<br />
+				{/each}
+			</div>
+		{/if}
+	</div>
+</div>
 
 <style>
 	@import '../../styles/button.css';
@@ -62,20 +61,27 @@
 
 	.header {
 		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 10px;
-	}
-
-	.header-left {
-		display: flex;
 		align-items: center;
 		gap: 5px;
 		flex-wrap: wrap;
+		margin-bottom: 5px;
 	}
 
-	.header-right {
-		margin-left: auto;
+	.content-section {
+		position: relative;
+		padding-top: 0px; /* Space for tabs */
+	}
+
+	.tabs-header {
+		position: absolute;
+		top: -35px;
+		right: 0;
+		z-index: 1;
+	}
+
+	.content-wrapper {
+		min-height: 400px;
+		transition: min-height 0.3s ease;
 	}
 
 	.clear {
@@ -95,6 +101,7 @@
 		/* color: #775252; */
 	}
 	.logs {
+		margin: 10px 0;
 		overflow-y: auto;
 		background-color: var(--logs-background-color);
 		border: 1px solid var(--logs-border-color);

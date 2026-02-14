@@ -1,15 +1,10 @@
 <script lang="ts">
 	import { formatTimeLogLine } from '$lib/utils';
-	import { fade } from 'svelte/transition';
-	import { createEventDispatcher } from 'svelte';
 	import { TIMER_TYPES } from '$lib/constants';
-
-	const dispatch = createEventDispatcher();
 
 	export let start: Date;
 	export let finish: Date;
 	export let name: string;
-	export let rawView: boolean;
 	export let topLog: boolean = false;
 
 	function formatTs(time: Date) {
@@ -22,14 +17,6 @@
 
 	let startClock = formatTs(start);
 	$: rest = name === TIMER_TYPES.REST;
-
-	function changeType(start: Date) {
-		dispatch('change', start);
-	}
-
-	function deleteItem(start: Date) {
-		dispatch('remove', start);
-	}
 </script>
 
 <snap class:topLog class="logline" class:rest>
@@ -42,20 +29,6 @@
 		{/if}
 	</snap>
 	<snap class="duration">{formatTimeLogLine(duration)}</snap>
-	{#if rawView && !topLog}
-		<button
-			transition:fade={{ duration: 100 }}
-			class="mini"
-			hidden={rawView}
-			on:click={() => changeType(start)}>ch</button
-		>
-		<button
-			transition:fade={{ duration: 100 }}
-			class="mini cross"
-			hidden={rawView}
-			on:click={() => deleteItem(start)}>x</button
-		>
-	{/if}
 </snap>
 
 <style>

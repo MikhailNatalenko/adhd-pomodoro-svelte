@@ -4,91 +4,56 @@
 	export let rightLabel: string = '';
 </script>
 
-<div class="toggle-container">
-	<span class="toggle-label {!checked ? 'active' : ''}">{leftLabel}</span>
-	<label class="toggle-switch">
-		<input type="checkbox" bind:checked />
-		<span class="slider"></span>
-	</label>
-	<span class="toggle-label {checked ? 'active' : ''}">{rightLabel}</span>
+<div class="tabs-container">
+	<button class="tab {!checked ? 'active' : ''}" on:click={() => (checked = false)}>
+		{leftLabel}
+	</button>
+	<button class="tab {checked ? 'active' : ''}" on:click={() => (checked = true)}>
+		{rightLabel}
+	</button>
 </div>
 
 <style>
 	@import '../../styles/fonts.css';
 
-	.toggle-container {
+	.tabs-container {
 		display: inline-flex;
-		align-items: center;
-		gap: 10px;
-		margin-left: 15px;
-		vertical-align: middle;
+		gap: 0;
+		border-radius: 6px;
+		overflow: hidden;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}
 
-	.toggle-label {
+	.tab {
 		font-family: 'title_roboto', sans-serif;
 		font-size: 14px;
-		opacity: 0.5;
-		transition:
-			opacity 0.3s,
-			font-weight 0.3s;
-		min-width: 45px;
-		text-align: center;
-	}
-
-	.toggle-label.active {
-		opacity: 1;
-		font-weight: 600;
-	}
-
-	.toggle-switch {
-		position: relative;
-		display: inline-block;
-		width: 50px;
-		height: 24px;
+		padding: 8px 20px;
+		border: none;
+		background-color: var(--logs-background-color, #f5f5f5);
+		color: var(--logs-text-color, #666);
 		cursor: pointer;
+		transition:
+			background-color 0.3s,
+			color 0.3s,
+			font-weight 0.3s;
+		user-select: none;
+		font-weight: 500;
+		border-right: 1px solid rgba(0, 0, 0, 0.1);
 	}
 
-	.toggle-switch input {
-		opacity: 0;
-		width: 0;
-		height: 0;
+	.tab:last-child {
+		border-right: none;
 	}
 
-	.slider {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background-color: var(--work-buttons);
-		opacity: 0.6;
-		border-radius: 24px;
-		transition: 0.3s;
+	.tab:hover:not(.active) {
+		background-color: rgba(76, 175, 80, 0.1);
+		color: var(--work-buttons, #4caf50);
 	}
 
-	.slider:before {
-		position: absolute;
-		content: '';
-		height: 18px;
-		width: 18px;
-		left: 3px;
-		bottom: 3px;
-		background-color: white;
-		border-radius: 50%;
-		transition: 0.3s;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-	}
-
-	.toggle-switch input:checked + .slider {
-		background-color: var(--work-buttons);
-		opacity: 1;
-	}
-
-	.toggle-switch input:checked + .slider:before {
-		transform: translateX(26px);
-	}
-
-	.toggle-switch:hover .slider {
-		opacity: 0.85;
+	.tab.active {
+		background-color: var(--work-buttons, #4caf50);
+		color: white;
+		font-weight: 600;
+		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 	}
 </style>

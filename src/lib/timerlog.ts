@@ -119,10 +119,9 @@ export class TimerList {
 		this.list = fillEmptyGaps(list, TIMER_TYPES.REST);
 	}
 
-	normalize(collapse: boolean) {
+	normalize() {
 		var timers = fillEmptyGaps(this.list, TIMER_TYPES.REST);
-		if (collapse) timers = collapseTimers(timers);
-
+		timers = collapseTimers(timers);
 		return timers;
 	}
 
