@@ -68,11 +68,11 @@
 	}
 
 	.moon {
-		color: #f1c40f;
+		color: #93bfd1;
 	}
 
 	.sun {
-		color: #f39c12;
+		color: #e8be7b;
 	}
 
 	:global(.dark) .theme-toggle {

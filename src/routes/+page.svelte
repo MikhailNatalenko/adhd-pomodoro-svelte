@@ -109,7 +109,9 @@
 			<div class="pomodoro">
 				<div class="header-row">
 					<h1 class="logo">Let's Pomodoro!</h1>
-					<ThemeToggle />
+					<div class="toggle-wrapper">
+						<ThemeToggle />
+					</div>
 				</div>
 				<Pomodoro
 					debugFlag={debug}
@@ -187,11 +189,17 @@
 	}
 
 	.header-row {
+		position: relative;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		gap: 20px;
 		margin-bottom: 20px;
+		width: 100%;
+	}
+
+	.toggle-wrapper {
+		position: absolute;
+		right: 20px;
 	}
 
 	.pomodoro {
