@@ -75,13 +75,16 @@
 			const position = (offset / totalDuration) * 100;
 
 			if (position >= 0 && position <= 100) {
+				const isTooClose = position < 5 || position > 95;
 				lines.push({
 					position,
-					label: currentHour.toLocaleTimeString(undefined, {
-						hour: '2-digit',
-						minute: '2-digit',
-						hour12: false
-					})
+					label: isTooClose
+						? ''
+						: currentHour.toLocaleTimeString(undefined, {
+								hour: '2-digit',
+								minute: '2-digit',
+								hour12: false
+							})
 				});
 			}
 
@@ -473,7 +476,7 @@
 		background-color: rgba(128, 128, 128, 0.1);
 		border: 1px solid var(--logs-border-color);
 		border-radius: 4px;
-		overflow: hidden;
+		overflow: visible;
 		margin-top: 25px; /* Space for time labels */
 	}
 
@@ -483,6 +486,7 @@
 		font-family: 'title_roboto', sans-serif;
 		font-size: 11px;
 		font-weight: 500;
+		color: var(--text-color);
 		opacity: 0.9;
 	}
 
@@ -508,9 +512,18 @@
 		top: 0;
 		height: 100%;
 		width: 1px;
+		pointer-events: none;
+	}
+
+	.grid-line::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
 		background-color: var(--logs-border-color);
 		opacity: 0.3;
-		pointer-events: none;
 	}
 
 	.grid-label {
@@ -521,7 +534,8 @@
 		font-family: 'title_roboto', sans-serif;
 		font-size: 10px;
 		white-space: nowrap;
-		opacity: 0.7;
+		color: var(--text-color);
+		opacity: 0.9;
 	}
 
 	.timer-block {
