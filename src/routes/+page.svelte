@@ -8,6 +8,7 @@
 	import { timer } from '$lib/stores/timerStore';
 	import { onMount, onDestroy } from 'svelte';
 	import { dev } from '$app/environment';
+	import { getParam } from '$lib/constants';
 
 	let debug: boolean = false;
 	let currentTimer: number;
@@ -17,7 +18,7 @@
 	// Update active timer finish time when timer is running
 	$: if ($pomApp && currentTimer !== undefined) {
 		pomApp.update((app) => {
-			app.updateActiveTimer();
+			app.tick(new Date(), getParam(debug).timersMultiplier);
 			return app;
 		});
 	}
@@ -26,19 +27,17 @@
 	$: {
 		if ($pomApp?.active) {
 			if (!activeTimerInterval) {
-				console.log('Starting active timer interval');
 				activeTimerInterval = setInterval(() => {
 					pomApp.update((app) => {
-						if (app.active) {
-							app.active.finish = new Date();
-						}
+						const multiplier = getParam(debug).timersMultiplier;
+						const autoStopped = app.tick(new Date(), multiplier);
+						if (autoStopped) timer.stop();
 						return app;
 					});
 				}, 1000);
 			}
 		} else {
 			if (activeTimerInterval) {
-				console.log('Clearing active timer interval');
 				clearInterval(activeTimerInterval);
 				activeTimerInterval = undefined;
 			}
@@ -68,27 +67,19 @@
 
 		// Auto-resume timer if there's an active timer from cookies
 		if ($pomApp?.active) {
-			const now = new Date();
-			const elapsed = (now.getTime() - $pomApp.active.start.getTime()) / 1000; // seconds
-			const planned = $pomApp.active.value * 60; // convert minutes to seconds
-			const remaining = Math.max(0, planned - elapsed);
+			const status = $pomApp.getRecoveryStatus(new Date(), getParam(debug).timersMultiplier);
 
-			console.log('Auto-resuming timer:', {
-				elapsed,
-				planned,
-				remaining,
-				timerType: $pomApp.active.name
-			});
-
-			// If there's still time remaining, start the timer
-			if (remaining > 0) {
-				const remainingMinutes = remaining / 60;
-				timer.start(remainingMinutes, $pomApp.active.name, debug);
-				console.log('Started timer with', remainingMinutes, 'minutes remaining');
+			if (status.shouldArchive) {
+				pomApp.update((app) => {
+					if (app.active) app.addTimer(app.active);
+					return app;
+				});
+				console.log('Timer expired beyond cap while closed, archived to history');
+			} else if (status.shouldResume) {
+				timer.start(status.remainingMinutes, $pomApp.active.name, debug);
+				console.log('Resumed timer with', status.remainingMinutes, 'minutes remaining');
 			} else {
-				// Timer expired, remove active timer
-				pomApp.update((app) => app.resetActive());
-				console.log('Timer expired, cleared active timer');
+				console.log('Timer in overtime, resumed background monitoring');
 			}
 		}
 
