@@ -65,13 +65,9 @@ function createPomAppStore(): Writable<PomApp> {
 					value: app.active.value
 				};
 				Cookies.set('activeTimer', JSON.stringify(activeData), { expires: 31 });
-				console.log('Saved active timer:', app.active.name, 'start:', app.active.start, 'finish:', app.active.finish);
 			} else {
 				Cookies.remove('activeTimer');
-				console.log('Removed active timer (app.active is undefined)');
 			}
-
-			console.log('Saved pomApp to cookies');
 		});
 	}
 

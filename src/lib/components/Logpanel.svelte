@@ -6,6 +6,7 @@
 	import type { Timer } from '$lib/types';
 	import { formatTimeHHMMSS } from '$lib/utils';
 	import { pomApp, totalTime } from '$lib/stores/pomodoroStore';
+	import { selectTimer } from '$lib/stores/selectedTimerStore';
 
 	var normalized: Timer[] = [];
 	let showGraph = true; // Default to graph view
@@ -32,12 +33,16 @@
 		{:else}
 			<div class="logs">
 				{#if $pomApp.active}
-					<LogLine {...$pomApp.active} topLog={true} /><br />
+					<LogLine {...$pomApp.active} topLog={true} />
 				{/if}
 
 				{#each [...normalized].reverse() as log (log.start)}
-					<LogLine {...log} topLog={false} on:remove={(event) => pomApp.update((app) => app.remove(event.detail))} />
-					<br />
+					<LogLine
+						{...log}
+						topLog={false}
+						on:click={() => selectTimer(log)}
+						on:remove={(event) => pomApp.update((app) => app.remove(event.detail))}
+					/>
 				{/each}
 			</div>
 		{/if}
