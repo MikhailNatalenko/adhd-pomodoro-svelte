@@ -79,29 +79,4 @@
 			color: black;
 		}
 	}
-
-	.mini {
-		border: none;
-		color: rgb(220, 220, 220);
-		text-align: center;
-		text-decoration: none;
-		display: inline-block;
-		font-size: 12px;
-		margin: 0px;
-		cursor: pointer;
-		font-family: 'Roboto-Regular';
-		height: 15px;
-		width: 50px;
-		border-radius: 5px;
-		background-color: rgb(19, 88, 108);
-	}
-
-	.cross {
-		width: 15px;
-		background-color: rgb(158, 44, 44);
-	}
-
-	.mini:hover {
-		background-color: rgb(58, 140, 163);
-	}
 </style>

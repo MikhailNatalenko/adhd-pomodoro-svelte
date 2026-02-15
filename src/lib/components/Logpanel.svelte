@@ -84,11 +84,6 @@
 		font-size: 20px;
 		/* color: #482a2a; */
 	}
-	label {
-		font-family: 'title_roboto', sans-serif;
-		font-size: 14px;
-		/* color: #775252; */
-	}
 	.logs {
 		margin: 10px 0;
 		overflow-y: auto;
