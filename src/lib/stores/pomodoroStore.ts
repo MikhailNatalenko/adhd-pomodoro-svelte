@@ -86,7 +86,19 @@ export const pomApp = createPomAppStore();
 /**
  * Dark mode preference
  */
-export const darkMode = persistentStore<boolean>('darkmode', false, {
+function getInitialDarkMode(): boolean {
+	if (browser) {
+		const stored = Cookies.get('darkmode');
+		if (stored !== undefined) {
+			return stored === 'true';
+		}
+		// If no cookie, use OS preference
+		return window.matchMedia('(prefers-color-scheme: dark)').matches;
+	}
+	return false;
+}
+
+export const darkMode = persistentStore<boolean>('darkmode', getInitialDarkMode(), {
 	storage: 'cookies',
 	serialize: (value) => value.toString(),
 	deserialize: (value) => value === 'true'

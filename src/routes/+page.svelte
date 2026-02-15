@@ -1,11 +1,13 @@
 <script lang="ts">
 	import Pomodoro from '$lib/components/Pomodoro.svelte';
 	import Logpanel from '$lib/components/Logpanel.svelte';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
 	import type { TimerEvent } from '$lib/types';
 	import { pomApp, darkMode } from '$lib/stores/pomodoroStore';
 	import { timer } from '$lib/stores/timerStore';
 	import { onMount, onDestroy } from 'svelte';
+	import { dev } from '$app/environment';
 
 	let debug: boolean = false;
 	let currentTimer: number;
@@ -105,7 +107,10 @@
 	<main class:dark={$darkMode}>
 		<div class="container">
 			<div class="pomodoro">
-				<h1 class="logo">Let's Pomodoro!</h1>
+				<div class="header-row">
+					<h1 class="logo">Let's Pomodoro!</h1>
+					<ThemeToggle />
+				</div>
 				<Pomodoro
 					debugFlag={debug}
 					on:timer={onTimer}
@@ -120,12 +125,13 @@
 		</div>
 	</main>
 {/if}
-<div class="debug-div">
-	<label id="debug">
-		Debug:<input type="checkbox" bind:checked={debug} />
-		<button on:click={toggleDark}> Toggle Dark Mode </button></label
-	>
-</div>
+{#if dev}
+	<div class="debug-div">
+		<label id="debug">
+			Debug:<input type="checkbox" bind:checked={debug} />
+		</label>
+	</div>
+{/if}
 
 <style>
 	@import './../styles/fonts.css';
@@ -180,8 +186,16 @@
 		max-width: 70vw;
 	}
 
+	.header-row {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 20px;
+		margin-bottom: 20px;
+	}
+
 	.pomodoro {
-		height: 400px;
+		height: 480px;
 	}
 
 	.logs {
