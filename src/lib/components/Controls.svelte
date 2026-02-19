@@ -2,14 +2,12 @@
 	import TimerStarter from '$lib/components/TimerStarter.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { TIMER_TYPES } from '$lib/constants';
+	import { workTimers, restTimers } from '$lib/stores/pomodoroStore';
 
 	const dispatch = createEventDispatcher();
 
 	let workComponents: TimerStarter[] = [];
 	let restComponents: TimerStarter[] = [];
-
-	let workTimers = [5, 10, 15, 20, 25];
-	let restTimers = [5, 10, 15, 20, 25];
 
 	// dialog state
 	let dialogOpen = false;
@@ -42,13 +40,25 @@
 	function confirmDialog() {
 		if (dialogInput !== null && dialogInput > 0) {
 			const val = Math.round(dialogInput);
-			if (dialogForType === 'work' && !workTimers.includes(val)) {
-				workTimers = [...workTimers, val].sort((a, b) => a - b);
-			} else if (dialogForType === 'rest' && !restTimers.includes(val)) {
-				restTimers = [...restTimers, val].sort((a, b) => a - b);
+			if (dialogForType === 'work') {
+				if (!$workTimers.includes(val)) {
+					workTimers.update((list) => [...list, val].sort((a, b) => a - b));
+				}
+			} else if (dialogForType === 'rest') {
+				if (!$restTimers.includes(val)) {
+					restTimers.update((list) => [...list, val].sort((a, b) => a - b));
+				}
 			}
 		}
 		closeDialog();
+	}
+
+	function removeTimer(type: 'work' | 'rest', value: number) {
+		if (type === 'work') {
+			workTimers.update((list) => list.filter((v) => v !== value));
+		} else {
+			restTimers.update((list) => list.filter((v) => v !== value));
+		}
 	}
 
 	function handleDialogKey(e: KeyboardEvent) {
@@ -66,37 +76,56 @@
 	}
 </script>
 
-<div>
+<div class="controls-wrapper">
 	<div class="grid-container">
 		<!-- Active column -->
 		<div class="item">
 			<span class="label">Active</span><br />
-			{#each workTimers as timer, i}
-				<TimerStarter value={timer} name={TIMER_TYPES.WORK} on:start={handleTimerStart} bind:this={workComponents[i]} />
-				<br />
-			{/each}
-			<button class="add-btn" title="Добавить таймер" on:click={() => openDialog('work')}>+</button>
+			<div class="timers-list">
+				{#each $workTimers as timer, i}
+					<div class="timer-item">
+						<TimerStarter
+							value={timer}
+							name={TIMER_TYPES.WORK}
+							on:start={handleTimerStart}
+							bind:this={workComponents[i]}
+						/>
+						<button class="delete-timer-btn" on:click={() => removeTimer('work', timer)} title="Удалить">×</button>
+					</div>
+				{/each}
+				<button class="add-btn" title="Добавить таймер" on:click={() => openDialog('work')}>+</button>
+			</div>
 		</div>
 
-		<slot class="item"></slot>
+		<div class="item">
+			<slot></slot>
+		</div>
 
 		<!-- Rest column -->
 		<div class="item">
 			<span class="label">Rest</span><br />
-			{#each restTimers as timer, i}
-				<TimerStarter value={timer} name={TIMER_TYPES.REST} on:start={handleTimerStart} bind:this={restComponents[i]} />
-				<br />
-			{/each}
-			<button class="add-btn" title="Добавить таймер" on:click={() => openDialog('rest')}>+</button>
+			<div class="timers-list">
+				{#each $restTimers as timer, i}
+					<div class="timer-item">
+						<TimerStarter
+							value={timer}
+							name={TIMER_TYPES.REST}
+							on:start={handleTimerStart}
+							bind:this={restComponents[i]}
+						/>
+						<button class="delete-timer-btn" on:click={() => removeTimer('rest', timer)} title="Удалить">×</button>
+					</div>
+				{/each}
+				<button class="add-btn" title="Добавить таймер" on:click={() => openDialog('rest')}>+</button>
+			</div>
 		</div>
 	</div>
 </div>
 
 <!-- Modal dialog -->
 {#if dialogOpen}
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div class="backdrop" on:click={handleBackdropClick}>
+	<div class="backdrop" on:click={handleBackdropClick} role="presentation">
 		<div
 			class="dialog"
 			bind:this={dialogEl}
@@ -120,11 +149,18 @@
 <style>
 	@import '../../styles/fonts.css';
 
+	.controls-wrapper {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+	}
+
 	.grid-container {
 		display: grid;
 		grid-template-columns: 1fr 3fr 1fr;
 		column-gap: 50px;
-		height: 35%;
+		min-height: 168px; /* roughly 35% of 480 */
+		align-items: start;
 	}
 
 	.item {
@@ -135,6 +171,51 @@
 		font-family: 'Roboto-Regular';
 		padding: 10px;
 		color: #554242;
+	}
+
+	.timers-list {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 5px;
+	}
+
+	.timer-item {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.delete-timer-btn {
+		position: absolute;
+		right: -25px;
+		top: 50%;
+		transform: translateY(-50%);
+		background: #722a2a;
+		color: white;
+		border: none;
+		border-radius: 50%;
+		width: 20px;
+		height: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		font-weight: bold;
+		font-size: 14px;
+		z-index: 5;
+		padding: 0;
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			opacity 0.2s,
+			visibility 0.2s;
+	}
+
+	.timer-item:hover .delete-timer-btn {
+		opacity: 1;
+		visibility: visible;
 	}
 
 	.add-btn {

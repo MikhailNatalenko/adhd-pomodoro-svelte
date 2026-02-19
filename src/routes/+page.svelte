@@ -170,13 +170,16 @@
 		justify-content: center;
 		background-color: var(--background-color);
 		color: var(--text-color);
+		min-height: 100vh;
+		overflow-y: auto;
 	}
 
 	.container {
-		height: 100vh;
+		min-height: 100vh;
 		flex-direction: column;
 		display: flex;
 		max-width: 70vw;
+		padding-bottom: 40px;
 	}
 
 	.header-row {
@@ -194,7 +197,7 @@
 	}
 
 	.pomodoro {
-		height: 480px;
+		margin-bottom: 20px;
 	}
 
 	.logs {

@@ -114,3 +114,14 @@ export const volume = persistentStore<number>('volume', 10, {
 	serialize: (value) => value.toString(),
 	deserialize: (value) => parseInt(value, 10)
 });
+
+/**
+ * Custom timer lists
+ */
+export const workTimers = persistentStore<number[]>('workTimers', [5, 10, 15, 20, 25], {
+	storage: 'cookies'
+});
+
+export const restTimers = persistentStore<number[]>('restTimers', [5, 10, 15, 20, 25], {
+	storage: 'cookies'
+});
