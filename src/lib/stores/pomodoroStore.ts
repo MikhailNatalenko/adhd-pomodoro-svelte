@@ -125,3 +125,8 @@ export const workTimers = persistentStore<number[]>('workTimers', [5, 10, 15, 20
 export const restTimers = persistentStore<number[]>('restTimers', [5, 10, 15, 20, 25], {
 	storage: 'cookies'
 });
+
+/**
+ * UI State for editing timers
+ */
+export const editMode = writable(false);

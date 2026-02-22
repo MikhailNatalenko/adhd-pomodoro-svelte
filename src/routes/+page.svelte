@@ -4,11 +4,12 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
 	import type { TimerEvent } from '$lib/types';
-	import { pomApp, darkMode } from '$lib/stores/pomodoroStore';
+	import { pomApp, darkMode, editMode } from '$lib/stores/pomodoroStore';
 	import { timer } from '$lib/stores/timerStore';
 	import { onMount, onDestroy } from 'svelte';
 	import { dev } from '$app/environment';
 	import { getParam } from '$lib/constants';
+	import Pencil from '$lib/icons/Pencil.svelte';
 
 	let debug: boolean = false;
 	let currentTimer: number;
@@ -99,6 +100,16 @@
 		<div class="container">
 			<div class="pomodoro">
 				<div class="header-row">
+					<div class="edit-wrapper">
+						<button
+							class="icon-button"
+							class:active={$editMode}
+							on:click={() => editMode.update((v) => !v)}
+							title={$editMode ? 'Done' : 'Edit timers'}
+						>
+							<Pencil />
+						</button>
+					</div>
 					<h1 class="logo">Let's Pomodoro!</h1>
 					<div class="toggle-wrapper">
 						<ThemeToggle />
@@ -196,6 +207,39 @@
 		right: 20px;
 	}
 
+	.edit-wrapper {
+		position: absolute;
+		left: 20px;
+	}
+
+	.icon-button {
+		background: transparent;
+		border: none;
+		color: var(--text-color);
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		padding: 8px;
+		border-radius: 50%;
+		transition:
+			background-color 0.2s,
+			color 0.2s;
+		width: 40px;
+		height: 40px;
+		opacity: 0.6;
+	}
+
+	.icon-button:hover {
+		background-color: rgba(128, 128, 128, 0.1);
+		opacity: 1;
+	}
+
+	.icon-button.active {
+		background-color: var(--chosen-bg-color);
+		color: #000;
+		opacity: 1;
+	}
+
 	.pomodoro {
 		margin-bottom: 20px;
 	}
@@ -216,8 +260,8 @@
 
 	.debug-div {
 		position: fixed;
-		right: 0; /* Привязка к правой стороне экрана */
-		bottom: 0; /* Привязка к нижней стороне экрана */
+		right: 0;
+		bottom: 0;
 		padding: 10px;
 	}
 </style>

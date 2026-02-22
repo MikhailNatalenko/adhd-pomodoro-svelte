@@ -2,7 +2,7 @@
 	import TimerStarter from '$lib/components/TimerStarter.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { TIMER_TYPES } from '$lib/constants';
-	import { workTimers, restTimers } from '$lib/stores/pomodoroStore';
+	import { workTimers, restTimers, editMode } from '$lib/stores/pomodoroStore';
 
 	const dispatch = createEventDispatcher();
 
@@ -20,6 +20,7 @@
 	}
 
 	function handleTimerStart(event: TimerStartEvent) {
+		if ($editMode) return;
 		dispatch('start', { timer: event.detail.val, name: event.detail.name });
 	}
 
@@ -90,10 +91,12 @@
 							on:start={handleTimerStart}
 							bind:this={workComponents[i]}
 						/>
-						<button class="delete-timer-btn" on:click={() => removeTimer('work', timer)} title="Удалить">×</button>
+						{#if $editMode}
+							<button class="delete-timer-btn" on:click={() => removeTimer('work', timer)} title="Remove">×</button>
+						{/if}
 					</div>
 				{/each}
-				<button class="add-btn" title="Добавить таймер" on:click={() => openDialog('work')}>+</button>
+				<button class="add-btn" title="Add timer" on:click={() => openDialog('work')}>+</button>
 			</div>
 		</div>
 
@@ -113,10 +116,12 @@
 							on:start={handleTimerStart}
 							bind:this={restComponents[i]}
 						/>
-						<button class="delete-timer-btn" on:click={() => removeTimer('rest', timer)} title="Удалить">×</button>
+						{#if $editMode}
+							<button class="delete-timer-btn" on:click={() => removeTimer('rest', timer)} title="Remove">×</button>
+						{/if}
 					</div>
 				{/each}
-				<button class="add-btn" title="Добавить таймер" on:click={() => openDialog('rest')}>+</button>
+				<button class="add-btn" title="Add timer" on:click={() => openDialog('rest')}>+</button>
 			</div>
 		</div>
 	</div>
@@ -132,15 +137,13 @@
 			on:keydown={handleDialogKey}
 			role="dialog"
 			aria-modal="true"
-			aria-label="Добавить таймер"
+			aria-label="Add timer"
 		>
-			<p class="dialog-title">Своё время (мин)</p>
-			<input class="dialog-input" type="number" min="1" max="999" placeholder="например, 45" bind:value={dialogInput} />
+			<p class="dialog-title">Duration (min)</p>
+			<input class="dialog-input" type="number" min="1" max="999" placeholder="e.g. 45" bind:value={dialogInput} />
 			<div class="dialog-actions">
-				<button class="dialog-ok" on:click={confirmDialog} disabled={!dialogInput || dialogInput <= 0}>
-					Добавить
-				</button>
-				<button class="dialog-cancel" on:click={closeDialog}>Отмена</button>
+				<button class="dialog-ok" on:click={confirmDialog} disabled={!dialogInput || dialogInput <= 0}> Add </button>
+				<button class="dialog-cancel" on:click={closeDialog}>Cancel</button>
 			</div>
 		</div>
 	</div>
@@ -206,16 +209,6 @@
 		font-size: 14px;
 		z-index: 5;
 		padding: 0;
-		opacity: 0;
-		visibility: hidden;
-		transition:
-			opacity 0.2s,
-			visibility 0.2s;
-	}
-
-	.timer-item:hover .delete-timer-btn {
-		opacity: 1;
-		visibility: visible;
 	}
 
 	.add-btn {
